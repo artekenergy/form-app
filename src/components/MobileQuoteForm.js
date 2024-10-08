@@ -72,22 +72,22 @@ const MobileQuoteForm = () => {
     try {
       const response = await fetch(googleScriptUrl, {
         method: "POST",
-        mode: "cors",
+        mode: "cors", // This ensures that the browser expects CORS headers in the response
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formData), // Send form data
       })
 
       const result = await response.json()
       if (result.status === "success") {
         alert("Form submitted successfully!")
       } else {
-        alert("Error in form submission.")
+        alert("Error submitting the form.")
       }
     } catch (error) {
       console.error("Error submitting form: ", error)
-      alert("There was an error submitting the form.")
+      alert("Error submitting the form.")
     }
   }
 
