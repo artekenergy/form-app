@@ -71,16 +71,15 @@ const MobileQuoteForm = () => {
 
     try {
       const response = await fetch(googleScriptUrl, {
+        redirect: "follow", // Important to follow redirects for Google Apps Script
         method: "POST",
-        mode: "cors", // This ensures that the browser expects CORS headers in the response
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "text/plain;charset=utf-8", // Use text/plain as per the workaround
         },
         body: JSON.stringify(formData), // Send form data
       })
 
-      const result = await response.json()
-      if (result.status === "success") {
+      if (response.ok) {
         alert("Form submitted successfully!")
       } else {
         alert("Error submitting the form.")
@@ -221,75 +220,74 @@ const MobileQuoteForm = () => {
 
       <h3>Application</h3>
 
-      {/* Commercial */}
-      <CheckboxInput
-        label="Commercial"
-        name="commercialCheckbox"
-        checked={formData.application.commercialCheckbox}
+      <RadioButton
+        name="applicationType"
+        value={formData.application.applicationType}
+        options={[
+          { label: "Commercial", value: "commercial" },
+          { label: "Recreational", value: "recreational" },
+          { label: "Other", value: "other" },
+        ]}
         onChange={(e) =>
           setFormData({
             ...formData,
             application: {
               ...formData.application,
-              commercialCheckbox: e.target.checked,
+              applicationType: e.target.value,
             },
           })
         }
       />
-      {formData.application.commercialCheckbox && (
+
+      {/* Conditionally show text input for each option */}
+      {formData.application.applicationType === "commercial" && (
         <TextInput
-          label="Please specify:"
-          name="commercial"
-          value={formData.application.commercial}
-          onChange={handleChange}
+          label="Please specify Commercial application:"
+          name="commercialApplication"
+          value={formData.application.commercialApplication}
+          onChange={(e) =>
+            setFormData({
+              ...formData,
+              application: {
+                ...formData.application,
+                commercialApplication: e.target.value,
+              },
+            })
+          }
         />
       )}
 
-      {/* Recreational */}
-      <CheckboxInput
-        label="Recreational"
-        name="recreationalCheckbox"
-        checked={formData.application.recreationalCheckbox}
-        onChange={(e) =>
-          setFormData({
-            ...formData,
-            application: {
-              ...formData.application,
-              recreationalCheckbox: e.target.checked,
-            },
-          })
-        }
-      />
-      {formData.application.recreationalCheckbox && (
+      {formData.application.applicationType === "recreational" && (
         <TextInput
-          label="Please specify:"
-          name="recreational"
-          value={formData.application.recreational}
-          onChange={handleChange}
+          label="Please specify Recreational application:"
+          name="recreationalApplication"
+          value={formData.application.recreationalApplication}
+          onChange={(e) =>
+            setFormData({
+              ...formData,
+              application: {
+                ...formData.application,
+                recreationalApplication: e.target.value,
+              },
+            })
+          }
         />
       )}
 
-      {/* Other */}
-      <CheckboxInput
-        label="Other"
-        name="otherCheckbox"
-        checked={formData.application.otherCheckbox}
-        onChange={(e) =>
-          setFormData({
-            ...formData,
-            application: {
-              ...formData.application,
-              otherCheckbox: e.target.checked,
-            },
-          })
-        }
-      />
-      {formData.application.otherCheckbox && (
+      {formData.application.applicationType === "other" && (
         <TextInput
-          label="Please specify:"
-          name="other"
-          value={formData.application.other}
-          onChange={handleChange}
+          label="Please specify Other application:"
+          name="otherApplication"
+          value={formData.application.otherApplication}
+          onChange={(e) =>
+            setFormData({
+              ...formData,
+              application: {
+                ...formData.application,
+                otherApplication: e.target.value,
+              },
+            })
+          }
         />
       )}
 

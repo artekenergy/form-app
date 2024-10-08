@@ -7,6 +7,8 @@ function Navigation() {
       <ul>
         <li>
           <Link to="/mobilequote">Mobile Quote</Link>
+          <Link to="/stationaryquote">Stationary Quote</Link>
+          <Link to="/rma">RMA</Link>
         </li>
         {/* Add more links as needed */}
       </ul>
