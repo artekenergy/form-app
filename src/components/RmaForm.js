@@ -30,7 +30,7 @@ const RmaForm = () => {
     const proxyUrlRma =
       "https://pure-escarpment-89857-457aa3cad0c8.herokuapp.com/"
     const googleScriptUrlRma =
-      "https://script.google.com/macros/s/AKfycby0s73Vz1VBomE365b7El2ab7x3Mp8iM28TfJuWFbg6DC3-LVlApf1x45WnXu3gNcUg/exec"
+      "https://script.google.com/macros/s/AKfycbxiQt12_JbMFFchDp7byXml9vqqQYtrbkTGlius-eIw99Twr-Bffc_YhLUy4jfe09C8/exec"
     const proxiedGoogleScriptUrlRma = proxyUrlRma + googleScriptUrlRma
 
     const dataToSend = {
