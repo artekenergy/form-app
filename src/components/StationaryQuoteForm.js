@@ -64,10 +64,12 @@ const StationaryQuoteForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    const proxyUrl = "https://pure-escarpment-89857-457aa3cad0c8.herokuapp.com/"
-    const googleScriptUrl =
+    const proxyUrlStationary =
+      "https://pure-escarpment-89857-457aa3cad0c8.herokuapp.com/"
+    const googleScriptUrlStationary =
       "https://script.google.com/macros/s/AKfycbybC5fWjj8U1GMbWPHSDKygAGa-Ha2CW-RJb48P3OjBuOR4Ji6JZ9r2MD5GE70mVvRf/exec"
-    const proxiedGoogleScriptUrl = proxyUrl + googleScriptUrl
+    const proxiedGoogleScriptUrlStationary =
+      proxyUrlStationary + googleScriptUrlStationary
 
     const dataToSend = {
       ...formData,
@@ -75,7 +77,7 @@ const StationaryQuoteForm = () => {
     }
 
     try {
-      const response = await fetch(proxiedGoogleScriptUrl, {
+      const response = await fetch(proxiedGoogleScriptUrlStationary, {
         redirect: "follow",
         method: "POST",
         headers: {

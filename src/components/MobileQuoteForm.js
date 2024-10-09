@@ -66,10 +66,11 @@ const MobileQuoteForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    const proxyUrl = "https://pure-escarpment-89857-457aa3cad0c8.herokuapp.com/"
-    const googleScriptUrl =
+    const proxyUrlMobile =
+      "https://pure-escarpment-89857-457aa3cad0c8.herokuapp.com/"
+    const googleScriptUrlMobile =
       "https://script.google.com/macros/s/AKfycbzbIXbydKLevpPvmEpKYhYKK1RmavShBfbS8KOht1KbeVmcx45uTIwV2n_fWVI5xpkNDg/exec"
-    const proxiedGoogleScriptUrl = proxyUrl + googleScriptUrl
+    const proxiedGoogleScriptUrlMobile = proxyUrlMobile + googleScriptUrlMobile
 
     const dataToSend = {
       ...formData,
@@ -77,7 +78,7 @@ const MobileQuoteForm = () => {
     }
 
     try {
-      const response = await fetch(proxiedGoogleScriptUrl, {
+      const response = await fetch(proxiedGoogleScriptUrlMobile, {
         redirect: "follow",
         method: "POST",
         headers: {
