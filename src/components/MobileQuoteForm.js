@@ -66,17 +66,24 @@ const MobileQuoteForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
+    const proxyUrl = "https://pure-escarpment-89857-457aa3cad0c8.herokuapp.com/"
     const googleScriptUrl =
       "https://script.google.com/macros/s/AKfycbzbIXbydKLevpPvmEpKYhYKK1RmavShBfbS8KOht1KbeVmcx45uTIwV2n_fWVI5xpkNDg/exec"
+    const proxiedGoogleScriptUrl = proxyUrl + googleScriptUrl
+
+    const dataToSend = {
+      ...formData,
+      formType: "mobileQuote", // Add a form identifier
+    }
 
     try {
-      const response = await fetch(googleScriptUrl, {
-        redirect: "follow", // Important to follow redirects for Google Apps Script
+      const response = await fetch(proxiedGoogleScriptUrl, {
+        redirect: "follow",
         method: "POST",
         headers: {
-          "Content-Type": "text/plain;charset=utf-8", // Use text/plain as per the workaround
+          "Content-Type": "text/plain;charset=utf-8",
         },
-        body: JSON.stringify(formData), // Send form data
+        body: JSON.stringify(dataToSend),
       })
 
       if (response.ok) {

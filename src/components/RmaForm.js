@@ -21,39 +21,46 @@ const RmaForm = () => {
     acknowledgeShippingCosts: false,
   })
 
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+
+    const proxyUrl = "https://pure-escarpment-89857-457aa3cad0c8.herokuapp.com/"
+    const googleScriptUrl =
+      "https://script.google.com/macros/s/AKfycbzbIXbydKLevpPvmEpKYhYKK1RmavShBfbS8KOht1KbeVmcx45uTIwV2n_fWVI5xpkNDg/exec"
+    const proxiedGoogleScriptUrl = proxyUrl + googleScriptUrl
+
+    const dataToSend = {
+      ...formData,
+      formType: "rmaForm", // Add a form identifier
+    }
+
+    try {
+      const response = await fetch(proxiedGoogleScriptUrl, {
+        redirect: "follow",
+        method: "POST",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8",
+        },
+        body: JSON.stringify(dataToSend),
+      })
+
+      if (response.ok) {
+        alert("Form submitted successfully!")
+      } else {
+        alert("Error submitting the form.")
+      }
+    } catch (error) {
+      console.error("Error submitting form: ", error)
+      alert("Error submitting the form.")
+    }
+  }
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
     setFormData({
       ...formData,
       [name]: type === "checkbox" ? checked : value,
     })
-  }
-
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-
-    const googleScriptUrl =
-      "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec"
-
-    try {
-      const response = await fetch(googleScriptUrl, {
-        redirect: "follow", // Important to follow redirects for Google Apps Script
-        method: "POST",
-        headers: {
-          "Content-Type": "text/plain;charset=utf-8", // Use text/plain as per the workaround
-        },
-        body: JSON.stringify(formData), // Send form data
-      })
-
-      if (response.ok) {
-        alert("RMA form submitted successfully!")
-      } else {
-        alert("Error submitting the RMA form.")
-      }
-    } catch (error) {
-      console.error("Error submitting RMA form: ", error)
-      alert("Error submitting the form.")
-    }
   }
 
   return (
