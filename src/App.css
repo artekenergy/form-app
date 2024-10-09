@@ -10,9 +10,13 @@
 /* Body styles */
 body {
   font-family: Arial, sans-serif;
-  background-color: #f7f7f7;
+  background-color: #38526e;
   color: #333;
   line-height: 1.6;
+  background-image: url("./images/logoWhite.png");
+  background-size: 600px;
+  background-repeat: no-repeat;
+  background-position: top left;
 }
 
 /* Form container */
