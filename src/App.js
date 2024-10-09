@@ -8,7 +8,6 @@ import Navigation from "./components/Navigation" // Assuming you have a Navigati
 function App() {
   return (
     <Router>
-      <Navigation />
       <Routes>
         <Route path="/mobilequote" element={<MobileQuote />} />
         <Route path="/stationaryquote" element={<StationaryQuote />} />

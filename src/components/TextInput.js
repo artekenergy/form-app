@@ -1,3 +1,4 @@
+import "../App.css"
 import React from "react"
 
 const TextInput = ({ label, name, value, onChange }) => {
