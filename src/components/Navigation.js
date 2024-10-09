@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 
 function Navigation() {
   return (
-    <nav>
+    <div className="navigation">
       <ul>
         <li>
           <Link to="/mobilequote">Mobile Quote</Link>
@@ -16,7 +16,7 @@ function Navigation() {
         </li>
         {/* Add more links as needed */}
       </ul>
-    </nav>
+    </div>
   )
 }
 

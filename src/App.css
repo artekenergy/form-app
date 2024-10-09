@@ -78,13 +78,28 @@ a {
   color: #38526e;
   text-decoration: none;
 }
-.homeNavigation {
+
+.homeContent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: #fff;
+}
+
+.navigation {
+  background-color: #fff;
+  align-items: center;
   display: inline-flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 20px;
-  background-color: #38526e;
-  color: #fff;
+  padding: 32px;
+  color: #38526e;
+}
+
+.navigation a {
+  color: #38526e;
+  text-decoration: none;
 }
 
 /* Checkbox and radio labels inline */
