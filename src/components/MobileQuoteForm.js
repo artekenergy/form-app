@@ -24,12 +24,10 @@ const MobileQuoteForm = () => {
     },
     platform: "",
     application: {
-      commercialCheckbox: false, // Added checkboxes
-      commercial: "",
-      recreationalCheckbox: false,
-      recreational: "",
-      otherCheckbox: false,
-      other: "",
+      applicationType: "",
+      commercialApplication: "",
+      recreationalApplication: "",
+      otherApplication: "",
     },
     vehicleDetails: {
       yearMakeModel: "",
@@ -42,25 +40,25 @@ const MobileQuoteForm = () => {
         microwave: false,
         hairDryer: false,
         blender: false,
-        otherAppliances: false, // Added otherAppliances checkbox
+        otherAppliances: false,
         other: "",
       },
     },
-    highDrawAppsSimultaneously: "", // Added simultaneous high-draw appliances question
-    hasGenerator: "", // Added generator field
-    generatorMakeModel: "", // Added generator make/model
-    hasAutoTransferSwitch: "", // Added auto transfer switch field
-    solarAmount: "", // Added solar amount
-    solarType: "", // Added solar type field
-    shorePower: "", // Added shore power field
-    has240VLoads: "", // Added 240V loads field
-    preferredSystemVoltage: "", // Added preferred system voltage field
-    specifiedVoltage: "", // Added specified voltage (12V, 24V, 48V)
-    preferredSystemVoltageExplanation: "", // Added explanation for voltage
-    batteryBankCapacity: "", // Added battery bank capacity
-    budget: "", // Added budget field
-    timeline: "", // Added timeline field
-    additionalDetails: "", // Added additional details
+    highDrawAppsSimultaneously: "",
+    hasGenerator: "",
+    generatorMakeModel: "",
+    hasAutoTransferSwitch: "",
+    solarAmount: "",
+    solarType: "",
+    shorePower: "",
+    has240VLoads: "",
+    preferredSystemVoltage: "",
+    specifiedVoltage: "",
+    preferredSystemVoltageExplanation: "",
+    batteryBankCapacity: "",
+    budget: "",
+    timeline: "",
+    additionalDetails: "",
   })
 
   const handleSubmit = async (e) => {
@@ -78,11 +76,13 @@ const MobileQuoteForm = () => {
     }
 
     try {
+      console.log("Submitting form data:", dataToSend)
+
       const response = await fetch(proxiedGoogleScriptUrlMobile, {
         redirect: "follow",
         method: "POST",
         headers: {
-          "Content-Type": "text/plain;charset=utf-8",
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(dataToSend),
       })
@@ -100,9 +100,18 @@ const MobileQuoteForm = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
-    setFormData({
-      ...formData,
-      [name]: type === "checkbox" ? checked : value,
+    const keys = name.split(".")
+    setFormData((prevFormData) => {
+      let data = { ...prevFormData }
+      let current = data
+      for (let i = 0; i < keys.length - 1; i++) {
+        if (!current[keys[i]]) {
+          current[keys[i]] = {}
+        }
+        current = current[keys[i]]
+      }
+      current[keys[keys.length - 1]] = type === "checkbox" ? checked : value
+      return data
     })
   }
 
@@ -172,12 +181,14 @@ const MobileQuoteForm = () => {
         value={formData.state}
         onChange={handleChange}
       />
+
       <NumberInput
         label="Shipping Postal Code:"
         name="postalCode"
         value={formData.postalCode}
         onChange={handleChange}
       />
+
       <TextInput
         label="Country:"
         name="country"
@@ -189,32 +200,16 @@ const MobileQuoteForm = () => {
 
       <CheckboxInput
         label="Electrical system design & components for DIY installation"
-        name="diyInstallation"
+        name="services.diyInstallation"
         checked={formData.services.diyInstallation}
-        onChange={(e) =>
-          setFormData({
-            ...formData,
-            services: {
-              ...formData.services,
-              diyInstallation: e.target.checked,
-            },
-          })
-        }
+        onChange={handleChange}
       />
 
       <CheckboxInput
         label="Electrical system design & professional installation at Artek"
-        name="professionalInstallation"
+        name="services.professionalInstallation"
         checked={formData.services.professionalInstallation}
-        onChange={(e) =>
-          setFormData({
-            ...formData,
-            services: {
-              ...formData.services,
-              professionalInstallation: e.target.checked,
-            },
-          })
-        }
+        onChange={handleChange}
       />
 
       <h3>Platform</h3>
@@ -229,73 +224,41 @@ const MobileQuoteForm = () => {
       <h3>Application</h3>
 
       <RadioButton
-        name="applicationType"
+        name="application.applicationType"
         value={formData.application.applicationType}
         options={[
           { label: "Commercial", value: "commercial" },
           { label: "Recreational", value: "recreational" },
           { label: "Other", value: "other" },
         ]}
-        onChange={(e) =>
-          setFormData({
-            ...formData,
-            application: {
-              ...formData.application,
-              applicationType: e.target.value,
-            },
-          })
-        }
+        onChange={handleChange}
       />
 
       {/* Conditionally show text input for each option */}
       {formData.application.applicationType === "commercial" && (
         <TextInput
           label="Please specify Commercial application:"
-          name="commercialApplication"
+          name="application.commercialApplication"
           value={formData.application.commercialApplication}
-          onChange={(e) =>
-            setFormData({
-              ...formData,
-              application: {
-                ...formData.application,
-                commercialApplication: e.target.value,
-              },
-            })
-          }
+          onChange={handleChange}
         />
       )}
 
       {formData.application.applicationType === "recreational" && (
         <TextInput
           label="Please specify Recreational application:"
-          name="recreationalApplication"
+          name="application.recreationalApplication"
           value={formData.application.recreationalApplication}
-          onChange={(e) =>
-            setFormData({
-              ...formData,
-              application: {
-                ...formData.application,
-                recreationalApplication: e.target.value,
-              },
-            })
-          }
+          onChange={handleChange}
         />
       )}
 
       {formData.application.applicationType === "other" && (
         <TextInput
           label="Please specify Other application:"
-          name="otherApplication"
+          name="application.otherApplication"
           value={formData.application.otherApplication}
-          onChange={(e) =>
-            setFormData({
-              ...formData,
-              application: {
-                ...formData.application,
-                otherApplication: e.target.value,
-              },
-            })
-          }
+          onChange={handleChange}
         />
       )}
 
@@ -303,185 +266,85 @@ const MobileQuoteForm = () => {
 
       <TextInput
         label="Vehicle year, make, model:"
-        name="yearMakeModel"
+        name="vehicleDetails.yearMakeModel"
         value={formData.vehicleDetails.yearMakeModel}
-        onChange={(e) =>
-          setFormData({
-            ...formData,
-            vehicleDetails: {
-              ...formData.vehicleDetails,
-              yearMakeModel: e.target.value,
-            },
-          })
-        }
+        onChange={handleChange}
       />
 
       <TextInput
         label="Vehicle engine type:"
-        name="engineType"
+        name="vehicleDetails.engineType"
         value={formData.vehicleDetails.engineType}
-        onChange={(e) =>
-          setFormData({
-            ...formData,
-            vehicleDetails: {
-              ...formData.vehicleDetails,
-              engineType: e.target.value,
-            },
-          })
-        }
+        onChange={handleChange}
       />
 
       <NumberInput
         label="How long would you prefer to be off-grid / without shore power? (days):"
-        name="offGridDays"
+        name="vehicleDetails.offGridDays"
         value={formData.vehicleDetails.offGridDays}
-        onChange={(e) =>
-          setFormData({
-            ...formData,
-            vehicleDetails: {
-              ...formData.vehicleDetails,
-              offGridDays: e.target.value,
-            },
-          })
-        }
+        onChange={handleChange}
       />
 
       <h3>High-draw appliances</h3>
 
       <CheckboxInput
         label="Air Conditioner"
-        name="airConditioner"
+        name="vehicleDetails.highDrawAppliances.airConditioner"
         checked={formData.vehicleDetails.highDrawAppliances.airConditioner}
-        onChange={(e) =>
-          setFormData({
-            ...formData,
-            vehicleDetails: {
-              ...formData.vehicleDetails,
-              highDrawAppliances: {
-                ...formData.vehicleDetails.highDrawAppliances,
-                airConditioner: e.target.checked,
-              },
-            },
-          })
-        }
+        onChange={handleChange}
       />
       {formData.vehicleDetails.highDrawAppliances.airConditioner && (
         <TextInput
           label="Please specify the air conditioner make and model:"
-          name="airConditionerSpecs"
+          name="vehicleDetails.highDrawAppliances.airConditionerSpecs"
           value={formData.vehicleDetails.highDrawAppliances.airConditionerSpecs}
-          onChange={(e) =>
-            setFormData({
-              ...formData,
-              vehicleDetails: {
-                ...formData.vehicleDetails,
-                highDrawAppliances: {
-                  ...formData.vehicleDetails.highDrawAppliances,
-                  airConditionerSpecs: e.target.value,
-                },
-              },
-            })
-          }
+          onChange={handleChange}
         />
       )}
 
       <CheckboxInput
         label="Induction Cookstove"
-        name="inductionCookstove"
+        name="vehicleDetails.highDrawAppliances.inductionCookstove"
         checked={formData.vehicleDetails.highDrawAppliances.inductionCookstove}
-        onChange={(e) =>
-          setFormData({
-            ...formData,
-            vehicleDetails: {
-              ...formData.vehicleDetails,
-              highDrawAppliances: {
-                ...formData.vehicleDetails.highDrawAppliances,
-                inductionCookstove: e.target.checked,
-              },
-            },
-          })
-        }
+        onChange={handleChange}
       />
 
       <CheckboxInput
         label="Microwave"
-        name="microwave"
+        name="vehicleDetails.highDrawAppliances.microwave"
         checked={formData.vehicleDetails.highDrawAppliances.microwave}
-        onChange={(e) =>
-          setFormData({
-            ...formData,
-            vehicleDetails: {
-              ...formData.vehicleDetails,
-              highDrawAppliances: {
-                ...formData.vehicleDetails.highDrawAppliances,
-                microwave: e.target.checked,
-              },
-            },
-          })
-        }
+        onChange={handleChange}
       />
 
       <CheckboxInput
         label="Hair Dryer"
-        name="hairDryer"
+        name="vehicleDetails.highDrawAppliances.hairDryer"
         checked={formData.vehicleDetails.highDrawAppliances.hairDryer}
-        onChange={(e) =>
-          setFormData({
-            ...formData,
-            vehicleDetails: {
-              ...formData.vehicleDetails,
-              highDrawAppliances: {
-                ...formData.vehicleDetails.highDrawAppliances,
-                hairDryer: e.target.checked,
-              },
-            },
-          })
-        }
+        onChange={handleChange}
       />
 
       <CheckboxInput
         label="Blender"
-        name="blender"
+        name="vehicleDetails.highDrawAppliances.blender"
         checked={formData.vehicleDetails.highDrawAppliances.blender}
-        onChange={(e) =>
-          setFormData({
-            ...formData,
-            vehicleDetails: {
-              ...formData.vehicleDetails,
-              highDrawAppliances: {
-                ...formData.vehicleDetails.highDrawAppliances,
-                blender: e.target.checked,
-              },
-            },
-          })
-        }
+        onChange={handleChange}
       />
 
       <CheckboxInput
         label="Other"
-        name="otherAppliances"
+        name="vehicleDetails.highDrawAppliances.otherAppliances"
         checked={formData.vehicleDetails.highDrawAppliances.otherAppliances}
-        onChange={(e) =>
-          setFormData({
-            ...formData,
-            vehicleDetails: {
-              ...formData.vehicleDetails,
-              highDrawAppliances: {
-                ...formData.vehicleDetails.highDrawAppliances,
-                otherAppliances: e.target.checked,
-              },
-            },
-          })
-        }
+        onChange={handleChange}
       />
       {formData.vehicleDetails.highDrawAppliances.otherAppliances && (
         <TextInput
           label="Please specify:"
-          name="otherAppliancesSpecs"
+          name="vehicleDetails.highDrawAppliances.other"
           value={formData.vehicleDetails.highDrawAppliances.other}
           onChange={handleChange}
         />
       )}
+
       <RadioButton
         label="Do you want to be able to use multiple high-draw appliances on high at the same time?"
         name="highDrawAppsSimultaneously"

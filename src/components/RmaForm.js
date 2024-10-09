@@ -27,7 +27,7 @@ const RmaForm = () => {
     const proxyUrlRma =
       "https://pure-escarpment-89857-457aa3cad0c8.herokuapp.com/"
     const googleScriptUrlRma =
-      "https://script.google.com/macros/s/AKfycbzFhKs2d4owpJ-SYV1H_Iq9jXEcDa6J74RHPUjRcNMqMc6UR2wQ4D04l3KaqgVQNRzj/exec"
+      "https://script.google.com/macros/s/AKfycby0s73Vz1VBomE365b7El2ab7x3Mp8iM28TfJuWFbg6DC3-LVlApf1x45WnXu3gNcUg/exec"
     const proxiedGoogleScriptUrlRma = proxyUrlRma + googleScriptUrlRma
 
     const dataToSend = {
@@ -36,11 +36,13 @@ const RmaForm = () => {
     }
 
     try {
+      console.log("Submitting form data:", dataToSend)
+
       const response = await fetch(proxiedGoogleScriptUrlRma, {
         redirect: "follow",
         method: "POST",
         headers: {
-          "Content-Type": "text/plain;charset=utf-8",
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(dataToSend),
       })
