@@ -61,8 +61,11 @@ const StationaryQuoteForm = () => {
     },
   })
 
+  const [loading, setLoading] = useState(false)
+
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setLoading(true) // Start loading
 
     const proxyUrlStationary =
       "https://pure-escarpment-89857-457aa3cad0c8.herokuapp.com/"
@@ -96,6 +99,8 @@ const StationaryQuoteForm = () => {
     } catch (error) {
       console.error("Error submitting form: ", error)
       alert("Error submitting the form.")
+    } finally {
+      setLoading(false) // Stop loading
     }
   }
 
@@ -453,7 +458,9 @@ const StationaryQuoteForm = () => {
         rows={6}
       />
 
-      <button type="submit">Submit</button>
+      <button type="submit" disabled={loading}>
+        {loading ? "Submitting..." : "Submit"}
+      </button>
     </form>
   )
 }

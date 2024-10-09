@@ -6,7 +6,6 @@ import StationaryQuoteForm from "../components/StationaryQuoteForm"
 const StationaryQuote = () => {
   return (
     <div>
-      <h1>Stationary Quotation Form</h1>
       <StationaryQuoteForm />
     </div>
   )
