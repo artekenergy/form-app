@@ -61,8 +61,11 @@ const MobileQuoteForm = () => {
     additionalDetails: "",
   })
 
+  const [loading, setLoading] = useState(false)
+
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setLoading(true)
 
     const proxyUrlMobile =
       "https://pure-escarpment-89857-457aa3cad0c8.herokuapp.com/"
@@ -95,6 +98,8 @@ const MobileQuoteForm = () => {
     } catch (error) {
       console.error("Error submitting form: ", error)
       alert("Error submitting the form.")
+    } finally {
+      setLoading(false) // Stop loading
     }
   }
 
@@ -516,7 +521,9 @@ const MobileQuoteForm = () => {
         rows={6} // You can adjust the number of rows for the textarea
       />
 
-      <button type="submit">Submit</button>
+      <button type="submit" disabled={loading}>
+        {loading ? "Submitting..." : "Submit"}
+      </button>
     </form>
   )
 }

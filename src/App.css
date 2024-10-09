@@ -36,7 +36,7 @@ h1 {
 form h2 {
   margin-bottom: 15px;
   font-size: 24px;
-  border-bottom: 2px solid #ccc;
+  border-bottom: 2px solid #38526e;
   padding-bottom: 5px;
 }
 
@@ -74,6 +74,19 @@ input[type="radio"] {
   margin-right: 10px;
 }
 
+a {
+  color: #38526e;
+  text-decoration: none;
+}
+.homeNavigation {
+  display: inline-flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #38526e;
+  color: #fff;
+}
+
 /* Checkbox and radio labels inline */
 .checkbox-group,
 .radio-group {
@@ -91,17 +104,19 @@ input[type="radio"] {
 /* Submit button */
 button[type="submit"] {
   display: inline-block;
-  background-color: #007bff;
+  background-color: #38526e;
   color: #fff;
   padding: 12px 25px;
   border: none;
   border-radius: 3px;
   cursor: pointer;
   font-size: 16px;
+  border-radius: 12px;
 }
 
 button[type="submit"]:hover {
-  background-color: #0056b3;
+  background-color: #2f445c;
+  color: azure;
 }
 
 /* Responsive adjustments */
