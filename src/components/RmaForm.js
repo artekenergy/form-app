@@ -33,56 +33,74 @@ const RmaForm = () => {
     e.preventDefault();
     setLoading(true);
 
-    // Generate PDF from form data
-    const pdfDoc = new jsPDF();
-    pdfDoc.text("RMA Form Submission", 10, 10);
-    pdfDoc.text(`First Name: ${formData.firstName}`, 10, 20);
-    pdfDoc.text(`Last Name: ${formData.lastName}`, 10, 30);
-    pdfDoc.text(`Company: ${formData.company}`, 10, 40);
-    pdfDoc.text(`Email: ${formData.email}`, 10, 50);
-    pdfDoc.text(`Phone: ${formData.phone}`, 10, 60);
-    pdfDoc.text(`Shipping Address: ${formData.shippingAddress}`, 10, 70);
-    pdfDoc.text(`Serial Number: ${formData.serialNumber}`, 10, 80);
-    pdfDoc.text(`Installation Date: ${formData.installationDate}`, 10, 90);
-    pdfDoc.text(`Failure Date: ${formData.failureDate}`, 10, 100);
-    pdfDoc.text(`Firmware Updated: ${formData.firmwareUpdated}`, 10, 110);
-    pdfDoc.text(`Firmware Version: ${formData.firmwareVersion}`, 10, 120);
-    pdfDoc.text(`Failure Description: ${formData.failureDescription}`, 10, 130);
-    pdfDoc.text(
-      `Acknowledge Shipping Costs: ${formData.acknowledgeShippingCosts ? "Yes" : "No"}`,
-      10,
-      140
-    );
-
-    // Convert PDF to blob
-    const pdfBlob = pdfDoc.output("blob");
-
-    // Prepare FormData payload
-    const formDataPayload = new FormData();
-    Object.keys(formData).forEach((key) => {
-      formDataPayload.append(key, formData[key]);
-    });
-
-    // Attach the generated PDF
-    formDataPayload.append("generatedPdf", pdfBlob, "RMA_Form.pdf");
-
-    // Attach additional file if available
-    if (selectedFile) {
-      formDataPayload.append("file", selectedFile, selectedFile.name);
-    }
-
-    // Send to Google Apps Script
-    const proxyUrlRma = "https://pure-escarpment-89857-457aa3cad0c8.herokuapp.com/";
-    const googleScriptUrlRma = "https://script.google.com/macros/s/AKfycbyfqiosJHDzX943dFcw9C6MjvLC6dhPfPOt62Uh4W5ybtce_lKOB4PYzF0-3V0F2Y4N/exec";
-    const proxiedGoogleScriptUrlRma = proxyUrlRma + googleScriptUrlRma;
-
     try {
+      // Generate PDF from form data
+      const pdfDoc = new jsPDF();
+      pdfDoc.text("RMA Form Submission", 10, 10);
+      pdfDoc.text(`First Name: ${formData.firstName}`, 10, 20);
+      pdfDoc.text(`Last Name: ${formData.lastName}`, 10, 30);
+      pdfDoc.text(`Company: ${formData.company}`, 10, 40);
+      pdfDoc.text(`Email: ${formData.email}`, 10, 50);
+      pdfDoc.text(`Phone: ${formData.phone}`, 10, 60);
+      pdfDoc.text(`Shipping Address: ${formData.shippingAddress}`, 10, 70);
+      pdfDoc.text(`Serial Number: ${formData.serialNumber}`, 10, 80);
+      pdfDoc.text(`Installation Date: ${formData.installationDate}`, 10, 90);
+      pdfDoc.text(`Failure Date: ${formData.failureDate}`, 10, 100);
+      pdfDoc.text(`Firmware Updated: ${formData.firmwareUpdated}`, 10, 110);
+      pdfDoc.text(`Firmware Version: ${formData.firmwareVersion}`, 10, 120);
+      pdfDoc.text(`Failure Description: ${formData.failureDescription}`, 10, 130);
+      pdfDoc.text(
+        `Acknowledge Shipping Costs: ${formData.acknowledgeShippingCosts ? "Yes" : "No"}`,
+        10,
+        140
+      );
+
+      // Convert PDF to blob
+      const pdfBlob = pdfDoc.output("blob");
+
+      // Prepare FormData payload
+      const formDataPayload = new FormData();
+      Object.keys(formData).forEach((key) => {
+        formDataPayload.append(key, formData[key]);
+      });
+
+      // Attach the generated PDF
+      formDataPayload.append("generatedPdf", pdfBlob, "RMA_Form.pdf");
+
+      // Attach additional file if available
+      if (selectedFile) {
+        formDataPayload.append("file", selectedFile, selectedFile.name);
+      }
+
+      // Send to Google Apps Script
+      const proxyUrlRma = "https://pure-escarpment-89857-457aa3cad0c8.herokuapp.com/";
+      const googleScriptUrlRma = "https://script.google.com/macros/s/AKfycbwnennzHAQUrp1sRgzAr1dBVv-aBLBp4vgw11XVhzRf89cn5-lQVsbVLbPoyeDK8HLJ/exec";
+      const proxiedGoogleScriptUrlRma = proxyUrlRma + googleScriptUrlRma;
+
       const response = await fetch(proxiedGoogleScriptUrlRma, {
         method: "POST",
         body: formDataPayload,
       });
+
       if (response.ok) {
         alert("Form submitted successfully!");
+        // Optionally, reset the form here
+        setFormData({
+          firstName: "",
+          lastName: "",
+          company: "",
+          email: "",
+          phone: "",
+          shippingAddress: "",
+          serialNumber: "",
+          installationDate: "",
+          failureDate: "",
+          firmwareUpdated: "",
+          firmwareVersion: "",
+          failureDescription: "",
+          acknowledgeShippingCosts: false,
+        });
+        setSelectedFile(null);
       } else {
         alert("Error submitting the form.");
       }
@@ -146,19 +164,28 @@ const RmaForm = () => {
       <TextArea label="Brief description of failure:" name="failureDescription" value={formData.failureDescription} onChange={handleChange} rows={4} />
 
       <h2>PART III - Pre-RMA Bench Test Instructions </h2>
-      <p>To file an RMA for any of the following product categories, you will need to complete the associated form. Once the form is completed online, download the completed form as a PDF and attach it below.</p>
+      <p>
+        To file an RMA for any of the following product categories, you will need to complete the associated form. Once the form is completed online,
+        download the completed form as a PDF and attach it below.
+      </p>
       <div className="rmaProductList">
         <ul>
-          <li><IFrame url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form---inverter.html" title="Inverter" width="100%" height="80%" />
-        </li>
-        <li>
-        <IFrame
-        url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form-sun-inverter.html" 
-        title="Sun Inverter" 
-        width="100%" 
-        height="80%"  
-      />
-        </li>
+          <li>
+            <IFrame
+              url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form---inverter.html"
+              title="Inverter"
+              width="100%"
+              height="80%"
+            />
+          </li>
+          <li>
+            <IFrame
+              url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form-sun-inverter.html"
+              title="Sun Inverter"
+              width="100%"
+              height="80%"
+            />
+          </li>
         <li>
         <IFrame
         url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form---inverter-charger.html" 
@@ -234,14 +261,14 @@ const RmaForm = () => {
         </ul>
       </div>
 
-       {/* Add file upload component */}
-       <FileUpload onFileChange={handleFileChange} />
+      {/* Add file upload component */}
+      <FileUpload onFileChange={handleFileChange} />
 
-<button type="submit" disabled={loading}>
-  {loading ? "Submitting..." : "Submit RMA Request"}
-</button>
-</form>
-);
+      <button type="submit" disabled={loading}>
+        {loading ? "Submitting..." : "Submit RMA Request"}
+      </button>
+    </form>
+  );
 };
 
 export default RmaForm;
