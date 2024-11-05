@@ -74,7 +74,7 @@ const RmaForm = () => {
 
       // Send to Google Apps Script
       const proxyUrlRma = "https://pure-escarpment-89857-457aa3cad0c8.herokuapp.com/";
-      const googleScriptUrlRma = "https://script.google.com/macros/s/AKfycbxkmSOhWzPs0QEfv4LtXFOdDfAOusKX4KSupsBdggiqFY---F_i7RcjaT4bBq6fclxO/exec";
+      const googleScriptUrlRma = "https://script.google.com/macros/s/AKfycbzIS-AwQ0ivdO_BL5PKAR7UUt6NdYKx8Aa65WkUwqWiYCI5MZQ1HRcZUyP0Gp6W5zcI/exec";
       const proxiedGoogleScriptUrlRma = proxyUrlRma + googleScriptUrlRma;
 
       const response = await fetch(proxiedGoogleScriptUrlRma, {
