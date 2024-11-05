@@ -33,7 +33,7 @@ const RmaForm = () => {
     setLoading(true);
 
     const proxyUrlRma = "https://pure-escarpment-89857-457aa3cad0c8.herokuapp.com/";
-    const googleScriptUrlRma = "https://script.google.com/macros/s/AKfycbxiQt12_JbMFFchDp7byXml9vqqQYtrbkTGlius-eIw99Twr-Bffc_YhLUy4jfe09C8/exec";
+    const googleScriptUrlRma = "https://script.google.com/macros/s/AKfycbxJD2OnxMKBXh3FmpWKIxL9AZw9wf6PeXlnFfhz8Ejg5Ppo9uvbxdLGBQ8-GqkJBSUo/exec";
     const proxiedGoogleScriptUrlRma = proxyUrlRma + googleScriptUrlRma;
 
     const formDataPayload = new FormData();
@@ -53,7 +53,6 @@ const RmaForm = () => {
         method: "POST",
         body: formDataPayload,
       });
-
       if (response.ok) {
         alert("Form submitted successfully!");
       } else {
