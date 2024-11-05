@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import jsPDF from "jspdf";
 import TextInput from "./TextInput";
 import RadioButton from "./RadioButton";
 import CheckboxInput from "./CheckboxInput";
@@ -32,21 +33,48 @@ const RmaForm = () => {
     e.preventDefault();
     setLoading(true);
 
-    const proxyUrlRma = "https://pure-escarpment-89857-457aa3cad0c8.herokuapp.com/";
-    const googleScriptUrlRma = "https://script.google.com/macros/s/AKfycbxPrvjGZQs_IpTameEGFtQHWD1cJA2PUeqs_JmTqMS4MSEbGGQYcU0ROLBJpVoi7rNn/exec";
-    const proxiedGoogleScriptUrlRma = proxyUrlRma + googleScriptUrlRma;
+    // Generate PDF from form data
+    const pdfDoc = new jsPDF();
+    pdfDoc.text("RMA Form Submission", 10, 10);
+    pdfDoc.text(`First Name: ${formData.firstName}`, 10, 20);
+    pdfDoc.text(`Last Name: ${formData.lastName}`, 10, 30);
+    pdfDoc.text(`Company: ${formData.company}`, 10, 40);
+    pdfDoc.text(`Email: ${formData.email}`, 10, 50);
+    pdfDoc.text(`Phone: ${formData.phone}`, 10, 60);
+    pdfDoc.text(`Shipping Address: ${formData.shippingAddress}`, 10, 70);
+    pdfDoc.text(`Serial Number: ${formData.serialNumber}`, 10, 80);
+    pdfDoc.text(`Installation Date: ${formData.installationDate}`, 10, 90);
+    pdfDoc.text(`Failure Date: ${formData.failureDate}`, 10, 100);
+    pdfDoc.text(`Firmware Updated: ${formData.firmwareUpdated}`, 10, 110);
+    pdfDoc.text(`Firmware Version: ${formData.firmwareVersion}`, 10, 120);
+    pdfDoc.text(`Failure Description: ${formData.failureDescription}`, 10, 130);
+    pdfDoc.text(
+      `Acknowledge Shipping Costs: ${formData.acknowledgeShippingCosts ? "Yes" : "No"}`,
+      10,
+      140
+    );
 
+    // Convert PDF to blob
+    const pdfBlob = pdfDoc.output("blob");
+
+    // Prepare FormData payload
     const formDataPayload = new FormData();
-
-    // Append form data fields
     Object.keys(formData).forEach((key) => {
       formDataPayload.append(key, formData[key]);
     });
 
-    // Attach the uploaded file
+    // Attach the generated PDF
+    formDataPayload.append("generatedPdf", pdfBlob, "RMA_Form.pdf");
+
+    // Attach additional file if available
     if (selectedFile) {
       formDataPayload.append("file", selectedFile, selectedFile.name);
     }
+
+    // Send to Google Apps Script
+    const proxyUrlRma = "https://pure-escarpment-89857-457aa3cad0c8.herokuapp.com/";
+    const googleScriptUrlRma = "https://script.google.com/macros/s/AKfycbyfqiosJHDzX943dFcw9C6MjvLC6dhPfPOt62Uh4W5ybtce_lKOB4PYzF0-3V0F2Y4N/exec";
+    const proxiedGoogleScriptUrlRma = proxyUrlRma + googleScriptUrlRma;
 
     try {
       const response = await fetch(proxiedGoogleScriptUrlRma, {
@@ -79,47 +107,12 @@ const RmaForm = () => {
       <h1>RMA Form</h1>
       <h2>PART I - Contact</h2>
 
-      <TextInput
-        label="First Name:"
-        name="firstName"
-        value={formData.firstName}
-        onChange={handleChange}
-      />
-
-      <TextInput
-        label="Last Name:"
-        name="lastName"
-        value={formData.lastName}
-        onChange={handleChange}
-      />
-
-      <TextInput
-        label="Company:"
-        name="company"
-        value={formData.company}
-        onChange={handleChange}
-      />
-
-      <TextInput
-        label="Email:"
-        name="email"
-        value={formData.email}
-        onChange={handleChange}
-      />
-
-      <TextInput
-        label="Phone:"
-        name="phone"
-        value={formData.phone}
-        onChange={handleChange}
-      />
-
-      <TextInput
-        label="Shipping Address:"
-        name="shippingAddress"
-        value={formData.shippingAddress}
-        onChange={handleChange}
-      />
+      <TextInput label="First Name:" name="firstName" value={formData.firstName} onChange={handleChange} />
+      <TextInput label="Last Name:" name="lastName" value={formData.lastName} onChange={handleChange} />
+      <TextInput label="Company:" name="company" value={formData.company} onChange={handleChange} />
+      <TextInput label="Email:" name="email" value={formData.email} onChange={handleChange} />
+      <TextInput label="Phone:" name="phone" value={formData.phone} onChange={handleChange} />
+      <TextInput label="Shipping Address:" name="shippingAddress" value={formData.shippingAddress} onChange={handleChange} />
 
       <CheckboxInput
         label="I acknowledge that Artek does not cover shipping costs for replacement products or shipping to and from repair centers."
@@ -130,26 +123,9 @@ const RmaForm = () => {
 
       <h2>PART II - Product Information</h2>
 
-      <TextInput
-        label="Serial Number (beginning in HQ):"
-        name="serialNumber"
-        value={formData.serialNumber}
-        onChange={handleChange}
-      />
-
-      <TextInput
-        label="Installation Date (MM/DD/YY):"
-        name="installationDate"
-        value={formData.installationDate}
-        onChange={handleChange}
-      />
-
-      <TextInput
-        label="Failure Date (MM/DD/YY):"
-        name="failureDate"
-        value={formData.failureDate}
-        onChange={handleChange}
-      />
+      <TextInput label="Serial Number (beginning in HQ):" name="serialNumber" value={formData.serialNumber} onChange={handleChange} />
+      <TextInput label="Installation Date (MM/DD/YY):" name="installationDate" value={formData.installationDate} onChange={handleChange} />
+      <TextInput label="Failure Date (MM/DD/YY):" name="failureDate" value={formData.failureDate} onChange={handleChange} />
 
       <h3>Firmware Updated?</h3>
       <RadioButton
@@ -164,37 +140,16 @@ const RmaForm = () => {
       />
 
       {formData.firmwareUpdated === "yes" && (
-        <TextInput
-          label="Specify Firmware Version:"
-          name="firmwareVersion"
-          value={formData.firmwareVersion}
-          onChange={handleChange}
-        />
+        <TextInput label="Specify Firmware Version:" name="firmwareVersion" value={formData.firmwareVersion} onChange={handleChange} />
       )}
 
-      <TextArea
-        label="Brief description of failure:"
-        name="failureDescription"
-        value={formData.failureDescription}
-        onChange={handleChange}
-        rows={4}
-      />
+      <TextArea label="Brief description of failure:" name="failureDescription" value={formData.failureDescription} onChange={handleChange} rows={4} />
 
       <h2>PART III - Pre-RMA Bench Test Instructions </h2>
-      <p>
-        To file an RMA for any of the following product categories, you will
-        need to complete the associated form. Once the form is completed online,
-        download the completed form as a PDF and attach it below.
-      </p>
+      <p>To file an RMA for any of the following product categories, you will need to complete the associated form. Once the form is completed online, download the completed form as a PDF and attach it below.</p>
       <div className="rmaProductList">
         <ul>
-        <li>
-        <IFrame
-        url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form---inverter.html" 
-        title="Inverter" 
-        width="100%" 
-        height="80%"  
-      />
+          <li><IFrame url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form---inverter.html" title="Inverter" width="100%" height="80%" />
         </li>
         <li>
         <IFrame
@@ -279,14 +234,14 @@ const RmaForm = () => {
         </ul>
       </div>
 
-      {/* Add file upload component */}
-      <FileUpload onFileChange={handleFileChange} />
+       {/* Add file upload component */}
+       <FileUpload onFileChange={handleFileChange} />
 
-      <button type="submit" disabled={loading}>
-        {loading ? "Submitting..." : "Submit RMA Request"}
-      </button>
-    </form>
-  );
+<button type="submit" disabled={loading}>
+  {loading ? "Submitting..." : "Submit RMA Request"}
+</button>
+</form>
+);
 };
 
 export default RmaForm;
