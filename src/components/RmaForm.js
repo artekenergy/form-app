@@ -33,7 +33,7 @@ const RmaForm = () => {
     setLoading(true);
 
     const proxyUrlRma = "https://pure-escarpment-89857-457aa3cad0c8.herokuapp.com/";
-    const googleScriptUrlRma = "https://script.google.com/macros/s/AKfycbxJD2OnxMKBXh3FmpWKIxL9AZw9wf6PeXlnFfhz8Ejg5Ppo9uvbxdLGBQ8-GqkJBSUo/exec";
+    const googleScriptUrlRma = "https://script.google.com/macros/s/AKfycbzSqBJRZ8STm2CyqRHu0wsx4nly7yBa-2qQj7xwLD_NUwsNG2tmGpQZfG9k3OFTiSPT/exec";
     const proxiedGoogleScriptUrlRma = proxyUrlRma + googleScriptUrlRma;
 
     const formDataPayload = new FormData();
