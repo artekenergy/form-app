@@ -1,33 +1,55 @@
+// FileUpload.js
 import React, { useState } from "react";
-import "../App.css"; // Ensure your external stylesheet is imported
 
-const FileUpload = ({ onFileChange }) => {
-  const [selectedFile, setSelectedFile] = useState(null);
+const FileUpload = ({ onFileChange, selectedFile }) => {
+  const [error, setError] = useState("");
 
-  // Handle file input change
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    setSelectedFile(file);
-    onFileChange(file); // Call the parent’s function to update the file in `RmaForm`
+  const handleChange = (e) => {
+    setError(""); // Reset error message
+    if (e.target.files && e.target.files[0]) {
+      const uploadedFile = e.target.files[0];
+
+      // Define allowed MIME types
+      const allowedTypes = [
+        "application/pdf",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "image/png",
+        "image/jpeg",
+      ];
+
+      // Validate file type safely
+      const fileType = uploadedFile.type ? uploadedFile.type.toLowerCase() : "";
+      if (!allowedTypes.includes(fileType)) {
+        setError("Unsupported file type. Please upload a PDF, Word document, or an image.");
+        return;
+      }
+
+      // Validate file size
+      const ALLOWED_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+      if (uploadedFile.size > ALLOWED_FILE_SIZE) {
+        setError("File size exceeds 5MB limit. Please upload a smaller file.");
+        return;
+      }
+
+      // Proceed with file change
+      onFileChange(uploadedFile);
+    }
   };
 
   return (
-    <div className="file-upload-form">
-      <label htmlFor="fileInput" className="form-label">
-        Attach Completed PDF Here:
-      </label>
+    <div className="file-upload">
+      <label htmlFor="uploadedFile">Attach Completed Document Here:</label>
       <input
         type="file"
-        id="fileInput"
-        onChange={handleFileChange}
-        className="file-input"
+        id="uploadedFile"
+        name="uploadedFile" // This name matches the backend expectation
+        accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+        onChange={handleChange}
+        aria-describedby="fileHelp"
       />
-
-      {selectedFile && (
-        <p className="selected-file">
-          Selected file: {selectedFile.name}
-        </p>
-      )}
+      {selectedFile && <p>Selected File: {selectedFile.name}</p>}
+      {error && <p className="error" role="alert">{error}</p>}
     </div>
   );
 };
