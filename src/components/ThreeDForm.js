@@ -53,7 +53,7 @@ const ThreeDForm = () => {
       formDataPayload.append("action", "submitForm");
 
       const googleScriptUrl =
-        "https://script.google.com/macros/s/AKfycbz4fgIe-W37Kvqz5ryZEReK2ZqHufIFcPXv78kfGiJGpwrDfuaKQkRNNQeC2E3rHT-WAw/exec"; // Replace with actual URL
+        "https://script.google.com/macros/s/AKfycbxWCCU4K1NgRovMAR88zHzqBnb-3Pkueep_Cw2YH-na4E9Bd4LH38b5Oozy08wYJB5HAQ/exec"; // Replace with actual URL
 
       const response = await fetch(googleScriptUrl, {
         method: "POST",
