@@ -1,3 +1,5 @@
+// StationaryQuoteForm.jsx
+
 import React, { useState } from "react"
 import TextInput from "./TextInput"
 import CheckboxInput from "./CheckboxInput"
@@ -63,27 +65,32 @@ const StationaryQuoteForm = () => {
 
   const [loading, setLoading] = useState(false)
 
+  /**
+   * Handles form submission by sending data to the GAS endpoint.
+   * @param {Event} e - The form submission event.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true) // Start loading
 
-    const proxyUrlStationary =
-      "https://pure-escarpment-89857-457aa3cad0c8.herokuapp.com/"
+    // Replace with your actual Web App URL from GAS deployment
     const googleScriptUrlStationary =
-      "https://script.google.com/macros/s/AKfycbyg23QQABRiTLuGBSQCxTRWcLFq-g9N-uFfXQ3F8C5WaB3ykalk6crhWmdhIfTSXIQ8/exec"
-    const proxiedGoogleScriptUrlStationary =
-      proxyUrlStationary + googleScriptUrlStationary
+      "https://script.google.com/macros/s/AKfycbzT0BTSGak22Qi3OA4ZaqfhAP9IAjrbw4KzkwFSe7JtMZD6242t494UuEv-U3QRBEMT/exec"
+    
+    // If a proxy is required, ensure it's correctly configured
+    // const proxyUrlStationary = "https://pure-escarpment-89857-457aa3cad0c8.herokuapp.com/"
+    // const proxiedGoogleScriptUrlStationary = proxyUrlStationary + googleScriptUrlStationary
 
     const dataToSend = {
       ...formData,
-      formType: "stationaryQuote", // Add a form identifier
+      formType: "stationaryQuote", // Add a form identifier if needed
     }
 
     try {
-      console.log("Submitting form data:", dataToSend)
+      console.log("Submitting form data:", JSON.stringify(dataToSend, null, 2))
 
-      const response = await fetch(proxiedGoogleScriptUrlStationary, {
-        redirect: "follow",
+      const response = await fetch(googleScriptUrlStationary, { // Use `proxiedGoogleScriptUrlStationary` if using proxy
+        // redirect: "follow", // Optional: Remove if not using proxy
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -91,19 +98,83 @@ const StationaryQuoteForm = () => {
         body: JSON.stringify(dataToSend),
       })
 
-      if (response.ok) {
+      const result = await response.json()
+      console.log("Response from GAS:", result)
+
+      if (response.ok && result.status === "success") {
         alert("Form submitted successfully!")
+        // Optionally, reset the form
+        setFormData({
+          firstName: "",
+          lastName: "",
+          company: "",
+          email: "",
+          phone: "",
+          addressLine1: "",
+          addressLine2: "",
+          city: "",
+          state: "",
+          postalCode: "",
+          country: "",
+          services: {
+            diyInstallation: false,
+            preWiredBoard: false,
+          },
+          platform: "",
+          application: {
+            type: "",
+            commercialDetails: "",
+            recreationalDetails: "",
+            otherDetails: "",
+          },
+          system: {
+            systemType: "",
+            requiresPermitting: "",
+            systemVoltage: "",
+            inverterCapacity: "",
+            highDrawAppliances: {
+              airConditioner: false,
+              airConditionerSpecs: "",
+              inductionCookstove: false,
+              microwave: false,
+              hairDryer: false,
+              blender: false,
+              otherAppliances: false,
+              other: "",
+            },
+            highDrawAppliancesSimultaneous: "",
+            generator: {
+              hasGenerator: "",
+              makeModel: "",
+              hasTransferSwitch: "",
+            },
+            solarAmount: "",
+            solarMount: "",
+            preferredVoltage: "",
+            preferredVoltageExplanation: "",
+            batteryBankCapacity: "",
+            budget: "",
+            timeline: "",
+            additionalDetails: "",
+          },
+        })
       } else {
-        alert("Error submitting the form.")
+        // Handle errors returned by GAS
+        const errorMessage = result.message || "Error submitting the form."
+        alert(`Error: ${errorMessage}`)
       }
     } catch (error) {
       console.error("Error submitting form: ", error)
-      alert("Error submitting the form.")
+      alert("An unexpected error occurred while submitting the form.")
     } finally {
       setLoading(false) // Stop loading
     }
   }
 
+  /**
+   * Handles changes to form inputs, updating the formData state accordingly.
+   * @param {Event} e - The input change event.
+   */
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
     const keys = name.split(".")
@@ -131,12 +202,14 @@ const StationaryQuoteForm = () => {
         name="firstName"
         value={formData.firstName}
         onChange={handleChange}
+        required
       />
       <TextInput
         label="Last Name:"
         name="lastName"
         value={formData.lastName}
         onChange={handleChange}
+        required
       />
       <TextInput
         label="Company:"
@@ -149,18 +222,23 @@ const StationaryQuoteForm = () => {
         name="email"
         value={formData.email}
         onChange={handleChange}
+        required
+        type="email"
       />
       <TextInput
         label="Phone:"
         name="phone"
         value={formData.phone}
         onChange={handleChange}
+        required
+        type="tel"
       />
       <TextInput
         label="Shipping Street Address Line 1:"
         name="addressLine1"
         value={formData.addressLine1}
         onChange={handleChange}
+        required
       />
       <TextInput
         label="Shipping Street Address Line 2:"
@@ -173,24 +251,28 @@ const StationaryQuoteForm = () => {
         name="city"
         value={formData.city}
         onChange={handleChange}
+        required
       />
       <TextInput
         label="Shipping State (Suffix):"
         name="state"
         value={formData.state}
         onChange={handleChange}
+        required
       />
       <NumberInput
         label="Shipping Postal Code:"
         name="postalCode"
         value={formData.postalCode}
         onChange={handleChange}
+        required
       />
       <TextInput
         label="Country:"
         name="country"
         value={formData.country}
         onChange={handleChange}
+        required
       />
 
       <h3>I am interested in a quote for the following service(s):</h3>
