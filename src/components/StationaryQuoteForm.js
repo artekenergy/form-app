@@ -70,7 +70,7 @@ const StationaryQuoteForm = () => {
     const proxyUrlStationary =
       "https://pure-escarpment-89857-457aa3cad0c8.herokuapp.com/"
     const googleScriptUrlStationary =
-      "https://script.google.com/macros/s/AKfycbwwiqjp2CfxGd6cfz8Zjue3thTyEVVMlHSLsOgNykTHAtN0n4iO53V_eJ8hy2mTmNMS/exec"
+      "https://script.google.com/macros/s/AKfycbyg23QQABRiTLuGBSQCxTRWcLFq-g9N-uFfXQ3F8C5WaB3ykalk6crhWmdhIfTSXIQ8/exec"
     const proxiedGoogleScriptUrlStationary =
       proxyUrlStationary + googleScriptUrlStationary
 
