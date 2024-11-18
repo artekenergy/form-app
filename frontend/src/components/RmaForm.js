@@ -47,7 +47,7 @@ const RmaForm = () => {
     try {
       // Send form data to the Google Apps Script endpoint through the proxy
       const response = await fetch(
-        `${PROXY_URL}https://script.google.com/macros/s/AKfycbyenbHU-UPD9rrKMQFpkDOoNlsdcGrqN7oyVRHKIy8OrJXWNrT6pdwMUPs2I35j8zZ7/exec`,
+        `${PROXY_URL}https://script.google.com/macros/s/AKfycbxxQ82zsVq7bBWwTAWBBa7OZduUUBJTmQFhN_bCq_EwmtxpF2ypBx_V6lNVcY1vY7gM/exec`,
         {
           method: "POST",
           headers: {
@@ -104,7 +104,7 @@ const RmaForm = () => {
 
       // Send file data to the Google Apps Script endpoint through the proxy
       const response = await fetch(
-        `${PROXY_URL}https://script.google.com/macros/s/AKfycbyenbHU-UPD9rrKMQFpkDOoNlsdcGrqN7oyVRHKIy8OrJXWNrT6pdwMUPs2I35j8zZ7/exec`,
+        `${PROXY_URL}https://script.google.com/macros/s/AKfycbxxQ82zsVq7bBWwTAWBBa7OZduUUBJTmQFhN_bCq_EwmtxpF2ypBx_V6lNVcY1vY7gM/exec`,
         {
           method: "POST",
           body: formData,
