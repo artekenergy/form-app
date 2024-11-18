@@ -1,15 +1,16 @@
-import React, { useState } from "react";
-import TextInput from "./TextInput";
-import RadioButton from "./RadioButton";
-import CheckboxInput from "./CheckboxInput";
-import TextArea from "./TextArea";
-import IFrame from "./IFrame";
-import FileUpload from "./FileUpload";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import React, { useState } from "react"
+import TextInput from "./TextInput"
+import RadioButton from "./RadioButton"
+import CheckboxInput from "./CheckboxInput"
+import TextArea from "./TextArea"
+import IFrame from "./IFrame"
+import FileUpload from "./FileUpload"
+import { ToastContainer, toast } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
 
-const CLIENT_ID = "603351500773-o9smkof98e28rd06ksv3st0grbn8ochp.apps.googleusercontent.com";
-const SCOPES = "https://www.googleapis.com/auth/drive.file";
+const CLIENT_ID =
+  "603351500773-o9smkof98e28rd06ksv3st0grbn8ochp.apps.googleusercontent.com"
+const SCOPES = "https://www.googleapis.com/auth/drive.file"
 
 const RmaForm = () => {
   const [formData, setFormData] = useState({
@@ -26,12 +27,12 @@ const RmaForm = () => {
     firmwareVersion: "",
     failureDescription: "",
     acknowledgeShippingCosts: false,
-  });
+  })
 
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [loadingForm, setLoadingForm] = useState(false);
-  const [loadingUpload, setLoadingUpload] = useState(false);
-  const [tokenClient, setTokenClient] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null)
+  const [loadingForm, setLoadingForm] = useState(false)
+  const [loadingUpload, setLoadingUpload] = useState(false)
+  const [tokenClient, setTokenClient] = useState(null)
 
   // Initialize GIS token client
   React.useEffect(() => {
@@ -41,128 +42,141 @@ const RmaForm = () => {
         scope: SCOPES,
         callback: (response) => {
           if (response && response.access_token) {
-            toast.success("Google authorization successful!");
+            toast.success("Google authorization successful!")
           } else {
-            toast.error("Google authorization failed!");
+            toast.error("Google authorization failed!")
           }
         },
-      });
-      setTokenClient(client);
-    };
+      })
+      setTokenClient(client)
+    }
 
     const loadGisScript = () => {
-      if (document.getElementById("gis-script")) return;
+      if (document.getElementById("gis-script")) return
 
-      const script = document.createElement("script");
-      script.id = "gis-script";
-      script.src = "https://accounts.google.com/gsi/client";
-      script.onload = initializeGisClient;
-      script.onerror = () => toast.error("Failed to load Google Identity Services");
-      document.body.appendChild(script);
-    };
+      const script = document.createElement("script")
+      script.id = "gis-script"
+      script.src = "https://accounts.google.com/gsi/client"
+      script.onload = initializeGisClient
+      script.onerror = () =>
+        toast.error("Failed to load Google Identity Services")
+      document.body.appendChild(script)
+    }
 
-    loadGisScript();
-  }, []);
+    loadGisScript()
+  }, [])
 
   const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value, type, checked } = e.target
     setFormData((prevData) => ({
       ...prevData,
       [name]: type === "checkbox" ? checked : value,
-    }));
-  };
+    }))
+  }
 
   const handleFileChange = (file) => {
-    setSelectedFile(file);
-  };
+    setSelectedFile(file)
+  }
 
   const authenticate = async () => {
     if (!tokenClient) {
-      toast.error("Google client not initialized. Please try again.");
-      return null;
+      toast.error("Google client not initialized. Please try again.")
+      return null
     }
 
     return new Promise((resolve, reject) => {
       tokenClient.callback = (response) => {
         if (response && response.access_token) {
-          resolve(response.access_token);
+          resolve(response.access_token)
         } else {
-          reject(new Error("Failed to retrieve access token"));
+          reject(new Error("Failed to retrieve access token"))
         }
-      };
-      tokenClient.requestAccessToken();
-    });
-  };
+      }
+      tokenClient.requestAccessToken()
+    })
+  }
 
   const handleUploadFile = async (e) => {
-    e.preventDefault();
-    setLoadingUpload(true);
+    e.preventDefault()
+    setLoadingUpload(true)
 
     if (!selectedFile) {
-      toast.error("Please select a file to upload.");
-      setLoadingUpload(false);
-      return;
+      toast.error("Please select a file to upload.")
+      setLoadingUpload(false)
+      return
     }
 
     try {
-      const accessToken = await authenticate();
-      if (!accessToken) throw new Error("Authorization failed");
+      const accessToken = await authenticate()
+      if (!accessToken) throw new Error("Authorization failed")
 
       const metadata = {
         name: selectedFile.name,
         mimeType: selectedFile.type,
-      };
+      }
 
-      const formData = new FormData();
-      formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
-      formData.append("file", selectedFile);
+      const formData = new FormData()
+      formData.append(
+        "metadata",
+        new Blob([JSON.stringify(metadata)], { type: "application/json" })
+      )
+      formData.append("file", selectedFile)
 
-      const response = await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: formData,
-      });
+      const response = await fetch(
+        "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: formData,
+        }
+      )
 
       if (response.ok) {
-        const data = await response.json();
-        toast.success(`File uploaded successfully: ${data.name}`);
-        setSelectedFile(null);
+        const data = await response.json()
+        toast.success(`File uploaded successfully: ${data.name}`)
+        setSelectedFile(null)
       } else {
-        throw new Error("File upload failed");
+        throw new Error("File upload failed")
       }
     } catch (error) {
-      console.error("Error uploading file:", error);
-      toast.error("An error occurred while uploading the file.");
+      console.error("Error uploading file:", error)
+      toast.error("An error occurred while uploading the file.")
     } finally {
-      setLoadingUpload(false);
+      setLoadingUpload(false)
     }
-  };
+  }
 
   const handleSubmitForm = async (e) => {
-    e.preventDefault();
-    setLoadingForm(true);
-  
+    e.preventDefault()
+    setLoadingForm(true)
+
     if (!formData.firstName || !formData.lastName || !formData.email) {
-      toast.error("Please fill in all required fields.");
-      setLoadingForm(false);
-      return;
+      toast.error("Please fill in all required fields.")
+      setLoadingForm(false)
+      return
     }
-  
+
     try {
-      const response = await fetch('http://localhost:5000/submit-form', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-  
-      const responseData = await response.json();
-  
-      if (response.ok && responseData.status === 'success') {
-        toast.success("Form submitted successfully!");
+      const response = await fetch(
+        "https://script.google.com/macros/s/AKfycbwhcHILKH1Oky3UrtaSZyKrUIteqlHI1nnbpOSnyX310EbNKIuR5zax_it7in0mTAym/exec",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded", // GAS expects form-urlencoded data
+          },
+          body: new URLSearchParams({
+            action: "submitForm",
+            ...formData,
+          }),
+        }
+      )
+
+      const responseData = await response.json()
+
+      if (response.ok && responseData.status === "success") {
+        toast.success("Form submitted successfully!")
         setFormData({
           firstName: "",
           lastName: "",
@@ -177,17 +191,19 @@ const RmaForm = () => {
           firmwareVersion: "",
           failureDescription: "",
           acknowledgeShippingCosts: false,
-        });
+        })
       } else {
-        toast.error(`Form submission failed: ${responseData.message || "Unknown error."}`);
+        toast.error(
+          `Form submission failed: ${responseData.message || "Unknown error."}`
+        )
       }
     } catch (error) {
-      console.error("Error submitting form:", error);
-      toast.error("An error occurred while submitting the form.");
+      console.error("Error submitting form:", error)
+      toast.error("An error occurred while submitting the form.")
     } finally {
-      setLoadingForm(false);
+      setLoadingForm(false)
     }
-  };
+  }
 
   return (
     <>
@@ -295,18 +311,18 @@ const RmaForm = () => {
           onChange={handleInputChange}
           rows={4}
         />
-                {/* Submit RMA Form */}
-                <button type="submit" disabled={loadingForm}>
+        {/* Submit RMA Form */}
+        <button type="submit" disabled={loadingForm}>
           {loadingForm ? "Submitting..." : "Submit RMA Form"}
         </button>
       </form>
-  {/* File Upload */}
-  <form onSubmit={handleUploadFile}>
+      {/* File Upload */}
+      <form onSubmit={handleUploadFile}>
         <h2>PART III - Pre-RMA Bench Test Instructions </h2>
         <p>
           To file an RMA for any of the following product categories, you will
-          need to complete the associated form. Once the form is completed online,
-          download the completed form as a PDF and attach it below.
+          need to complete the associated form. Once the form is completed
+          online, download the completed form as a PDF and attach it below.
         </p>
         <div className="rmaProductList">
           <ul>
@@ -318,92 +334,93 @@ const RmaForm = () => {
                 height="80%"
               />
             </li>
-          <li>
-            <IFrame
-              url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form-sun-inverter.html"
-              title="Sun Inverter"
-              width="100%"
-              height="80%"
-            />
-          </li>
-          <li>
-            <IFrame
-              url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form---inverter-charger.html"
-              title="Inverter/Charger"
-              width="100%"
-              height="80%"
-            />
-          </li>
-          <li>
-            <IFrame
-              url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form---smart-charger.html"
-              title="Smart Charger"
-              width="100%"
-              height="80%"
-            />
-          </li>
-          <li>
-            <IFrame
-              url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form---mppt-solar-charger.html"
-              title="MPPT Solar Charger"
-              width="100%"
-              height="80%"
-            />
-          </li>
-          <li>
-            <IFrame
-              url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form---smartsolar-mppt-rs.html"
-              title="SmartSolar MPPT RS Charger"
-              width="100%"
-              height="80%"
-            />
-          </li>
-          <li>
-            <IFrame
-              url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form---bmv-battery-monitor.html"
-              title="BMV Battery Monitors"
-              width="100%"
-              height="80%"
-            />
-          </li>
-          <li>
-            <IFrame
-              url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form---batteryprotect.html"
-              title="Battery Protect"
-              width="100%"
-              height="80%"
-            />
-          </li>
-          <li>
-            <IFrame
-              url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form---orion-tr-dc-dc-converter.html"
-              title="Orion-Tr DC-DC Converter"
-              width="100%"
-              height="80%"
-            />
-          </li>
-          <li>
-            <IFrame
-              url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form---lead-acid-battery.html"
-              title="Lead Acid Battery"
-              width="100%"
-              height="80%"
-            />
-          </li>
-          <li>
-            <IFrame
-              url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form---lithium-battery-smart.html"
-              title="Smart Lithium Battery"
-              width="100%"
-              height="80%"
-            />
-          </li>
+            <li>
+              <IFrame
+                url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form-sun-inverter.html"
+                title="Sun Inverter"
+                width="100%"
+                height="80%"
+              />
+            </li>
+            <li>
+              <IFrame
+                url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form---inverter-charger.html"
+                title="Inverter/Charger"
+                width="100%"
+                height="80%"
+              />
+            </li>
+            <li>
+              <IFrame
+                url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form---smart-charger.html"
+                title="Smart Charger"
+                width="100%"
+                height="80%"
+              />
+            </li>
+            <li>
+              <IFrame
+                url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form---mppt-solar-charger.html"
+                title="MPPT Solar Charger"
+                width="100%"
+                height="80%"
+              />
+            </li>
+            <li>
+              <IFrame
+                url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form---smartsolar-mppt-rs.html"
+                title="SmartSolar MPPT RS Charger"
+                width="100%"
+                height="80%"
+              />
+            </li>
+            <li>
+              <IFrame
+                url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form---bmv-battery-monitor.html"
+                title="BMV Battery Monitors"
+                width="100%"
+                height="80%"
+              />
+            </li>
+            <li>
+              <IFrame
+                url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form---batteryprotect.html"
+                title="Battery Protect"
+                width="100%"
+                height="80%"
+              />
+            </li>
+            <li>
+              <IFrame
+                url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form---orion-tr-dc-dc-converter.html"
+                title="Orion-Tr DC-DC Converter"
+                width="100%"
+                height="80%"
+              />
+            </li>
+            <li>
+              <IFrame
+                url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form---lead-acid-battery.html"
+                title="Lead Acid Battery"
+                width="100%"
+                height="80%"
+              />
+            </li>
+            <li>
+              <IFrame
+                url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form---lithium-battery-smart.html"
+                title="Smart Lithium Battery"
+                width="100%"
+                height="80%"
+              />
+            </li>
           </ul>
         </div>
 
-
-
-        <FileUpload onFileChange={handleFileChange} selectedFile={selectedFile} />
+        <FileUpload
+          onFileChange={handleFileChange}
+          selectedFile={selectedFile}
+        />
         <br />
 
         <button type="submit" disabled={loadingUpload}>
@@ -414,7 +431,7 @@ const RmaForm = () => {
       {/* Toast Notifications */}
       <ToastContainer />
     </>
-  );
-};
+  )
+}
 
-export default RmaForm;
+export default RmaForm
