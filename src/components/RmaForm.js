@@ -1,5 +1,4 @@
-/* global gapi */
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState } from "react";
 import TextInput from "./TextInput";
 import RadioButton from "./RadioButton";
 import CheckboxInput from "./CheckboxInput";
@@ -9,11 +8,8 @@ import FileUpload from "./FileUpload";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const API_KEY = "AIzaSyAux_TCLah82CLaEMVb7luoTtiSbx4c3Oo";
 const CLIENT_ID = "603351500773-o9smkof98e28rd06ksv3st0grbn8ochp.apps.googleusercontent.com";
 const SCOPES = "https://www.googleapis.com/auth/drive.file";
-
-let gapiInitialized = false;
 
 const RmaForm = () => {
   const [formData, setFormData] = useState({
@@ -35,8 +31,39 @@ const RmaForm = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [loadingForm, setLoadingForm] = useState(false);
   const [loadingUpload, setLoadingUpload] = useState(false);
+  const [tokenClient, setTokenClient] = useState(null);
 
-  // Handle input changes for form fields
+  // Initialize GIS token client
+  React.useEffect(() => {
+    const initializeGisClient = () => {
+      const client = window.google.accounts.oauth2.initTokenClient({
+        client_id: CLIENT_ID,
+        scope: SCOPES,
+        callback: (response) => {
+          if (response && response.access_token) {
+            toast.success("Google authorization successful!");
+          } else {
+            toast.error("Google authorization failed!");
+          }
+        },
+      });
+      setTokenClient(client);
+    };
+
+    const loadGisScript = () => {
+      if (document.getElementById("gis-script")) return;
+
+      const script = document.createElement("script");
+      script.id = "gis-script";
+      script.src = "https://accounts.google.com/gsi/client";
+      script.onload = initializeGisClient;
+      script.onerror = () => toast.error("Failed to load Google Identity Services");
+      document.body.appendChild(script);
+    };
+
+    loadGisScript();
+  }, []);
+
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prevData) => ({
@@ -45,84 +72,51 @@ const RmaForm = () => {
     }));
   };
 
-  // Handle file selection
   const handleFileChange = (file) => {
     setSelectedFile(file);
   };
 
-  // Load the GAPI script dynamically
-  const loadGapiScript = useCallback(() => {
+  const authenticate = async () => {
+    if (!tokenClient) {
+      toast.error("Google client not initialized. Please try again.");
+      return null;
+    }
+
     return new Promise((resolve, reject) => {
-      if (document.getElementById("gapi-script")) {
-        resolve();
-        return;
-      }
-      const script = document.createElement("script");
-      script.id = "gapi-script";
-      script.src = "https://apis.google.com/js/api.js";
-      script.onload = resolve;
-      script.onerror = () => reject(new Error("Failed to load gapi script"));
-      document.body.appendChild(script);
+      tokenClient.callback = (response) => {
+        if (response && response.access_token) {
+          resolve(response.access_token);
+        } else {
+          reject(new Error("Failed to retrieve access token"));
+        }
+      };
+      tokenClient.requestAccessToken();
     });
-  }, []);
+  };
 
-  // Initialize GAPI client
-  const loadGapi = useCallback(async () => {
-    try {
-      await loadGapiScript();
-      gapi.load("client:auth2", async () => {
-        await gapi.client.init({
-          apiKey: API_KEY,
-          clientId: CLIENT_ID,
-          discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
-          scope: SCOPES,
-        });
-        gapiInitialized = true;
-        console.log("GAPI Initialized");
-      });
-    } catch (error) {
-      console.error("Error loading GAPI:", error);
-      toast.error("Error initializing Google API client.");
-    }
-  }, [loadGapiScript]);
-
-  // Authenticate and get access token
-  const authenticate = useCallback(async () => {
-    if (!gapiInitialized) throw new Error("GAPI not initialized");
-    const GoogleAuth = gapi.auth2.getAuthInstance();
-    if (!GoogleAuth.isSignedIn.get()) {
-      await GoogleAuth.signIn();
-    }
-    return GoogleAuth.currentUser.get().getAuthResponse().access_token;
-  }, []);
-
-  // File Upload Handler
   const handleUploadFile = async (e) => {
     e.preventDefault();
     setLoadingUpload(true);
-  
+
     if (!selectedFile) {
       toast.error("Please select a file to upload.");
       setLoadingUpload(false);
       return;
     }
-  
+
     try {
-      // Ensure GAPI is initialized
-      if (!gapiInitialized) {
-        await loadGapi();
-      }
-  
       const accessToken = await authenticate();
+      if (!accessToken) throw new Error("Authorization failed");
+
       const metadata = {
         name: selectedFile.name,
         mimeType: selectedFile.type,
       };
-  
+
       const formData = new FormData();
       formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
       formData.append("file", selectedFile);
-  
+
       const response = await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart", {
         method: "POST",
         headers: {
@@ -130,13 +124,13 @@ const RmaForm = () => {
         },
         body: formData,
       });
-  
+
       if (response.ok) {
         const data = await response.json();
         toast.success(`File uploaded successfully: ${data.name}`);
         setSelectedFile(null);
       } else {
-        toast.error("File upload failed.");
+        throw new Error("File upload failed");
       }
     } catch (error) {
       console.error("Error uploading file:", error);
@@ -145,14 +139,7 @@ const RmaForm = () => {
       setLoadingUpload(false);
     }
   };
-  
 
-  // Load GAPI on component mount
-  useEffect(() => {
-    loadGapi();
-  }, [loadGapi]);
-
-  // Handle form submission
   const handleSubmitForm = async (e) => {
     e.preventDefault();
     setLoadingForm(true);
