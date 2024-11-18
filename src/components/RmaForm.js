@@ -70,7 +70,7 @@ const RmaForm = () => {
 
       // Send form data to GAS
       const googleScriptUrl =
-        "https://script.google.com/macros/s/AKfycby5fcJD7V--a5p86zE9gpbo1E-FPNvh0lSHhYSoPaX8jTb21CsifQfkAKrR8Q7k4UbW/exec"; // Replace with your actual Web App URL
+        "https://script.google.com/macros/s/AKfycbwhcHILKH1Oky3UrtaSZyKrUIteqlHI1nnbpOSnyX310EbNKIuR5zax_it7in0mTAym/exec"; // Replace with your actual Web App URL
 
       const response = await fetch(googleScriptUrl, {
         method: "POST",
@@ -143,7 +143,7 @@ const RmaForm = () => {
 
       // Send file to GAS
       const googleScriptUrl =
-        "https://script.google.com/macros/s/AKfycby5fcJD7V--a5p86zE9gpbo1E-FPNvh0lSHhYSoPaX8jTb21CsifQfkAKrR8Q7k4UbW/exec"; // Same Web App URL as form submissi
+        "https://script.google.com/macros/s/AKfycbwhcHILKH1Oky3UrtaSZyKrUIteqlHI1nnbpOSnyX310EbNKIuR5zax_it7in0mTAym/exec"; // Same Web App URL as form submissi
 
 
 
