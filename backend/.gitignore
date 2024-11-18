@@ -77,9 +77,6 @@ pids
 *.pid
 *.pid.lock
 
-# NPM package lock
-package-lock.json
-
 # Yarn lockfile
 yarn.lock
 
