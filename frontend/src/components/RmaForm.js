@@ -101,7 +101,7 @@ const RmaForm = () => {
       formData.append("file", selectedFile)
 
       const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbzks894oFkDsQ0zCCcSGGyR08Z2kN5H_jL2ycKWqCQiL8Vrqm9voZnmTE48YSSdQlx4/exec",
+        "https://script.google.com/macros/s/AKfycbwp32d35d0eCxd_sMe-vyJr6EQ49blcSGAXp8q9KDSG2KRjqMeB89F6b2bLcHwbfZ9z/exec",
         {
           method: "POST",
           body: formData,
