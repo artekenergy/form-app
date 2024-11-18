@@ -100,24 +100,29 @@ const RmaForm = () => {
   const handleUploadFile = async (e) => {
     e.preventDefault();
     setLoadingUpload(true);
-
+  
     if (!selectedFile) {
       toast.error("Please select a file to upload.");
       setLoadingUpload(false);
       return;
     }
-
+  
     try {
+      // Ensure GAPI is initialized
+      if (!gapiInitialized) {
+        await loadGapi();
+      }
+  
       const accessToken = await authenticate();
       const metadata = {
         name: selectedFile.name,
         mimeType: selectedFile.type,
       };
-
+  
       const formData = new FormData();
       formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
       formData.append("file", selectedFile);
-
+  
       const response = await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart", {
         method: "POST",
         headers: {
@@ -125,7 +130,7 @@ const RmaForm = () => {
         },
         body: formData,
       });
-
+  
       if (response.ok) {
         const data = await response.json();
         toast.success(`File uploaded successfully: ${data.name}`);
@@ -140,6 +145,7 @@ const RmaForm = () => {
       setLoadingUpload(false);
     }
   };
+  
 
   // Load GAPI on component mount
   useEffect(() => {
