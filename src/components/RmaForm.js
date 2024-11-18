@@ -1,13 +1,19 @@
 /* global gapi */
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import TextInput from "./TextInput";
 import RadioButton from "./RadioButton";
 import CheckboxInput from "./CheckboxInput";
 import TextArea from "./TextArea";
 import IFrame from "./IFrame";
-import FileUpload from "./FileUpload"; // Ensure this component correctly calls onFileChange with the selected file
+import FileUpload from "./FileUpload";
 import { ToastContainer, toast } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
+
+const API_KEY = "AIzaSyAux_TCLah82CLaEMVb7luoTtiSbx4c3Oo";
+const CLIENT_ID = "603351500773-o9smkof98e28rd06ksv3st0grbn8ochp.apps.googleusercontent.com";
+const SCOPES = "https://www.googleapis.com/auth/drive.file";
+
+let gapiInitialized = false;
 
 const RmaForm = () => {
   const [formData, setFormData] = useState({
@@ -26,7 +32,7 @@ const RmaForm = () => {
     acknowledgeShippingCosts: false,
   });
 
-  const [selectedFile, setSelectedFile] = useState(null); // State for the uploaded file
+  const [selectedFile, setSelectedFile] = useState(null);
   const [loadingForm, setLoadingForm] = useState(false);
   const [loadingUpload, setLoadingUpload] = useState(false);
 
@@ -44,12 +50,107 @@ const RmaForm = () => {
     setSelectedFile(file);
   };
 
-  // Handle Form Submission
+  // Load the GAPI script dynamically
+  const loadGapiScript = useCallback(() => {
+    return new Promise((resolve, reject) => {
+      if (document.getElementById("gapi-script")) {
+        resolve();
+        return;
+      }
+      const script = document.createElement("script");
+      script.id = "gapi-script";
+      script.src = "https://apis.google.com/js/api.js";
+      script.onload = resolve;
+      script.onerror = () => reject(new Error("Failed to load gapi script"));
+      document.body.appendChild(script);
+    });
+  }, []);
+
+  // Initialize GAPI client
+  const loadGapi = useCallback(async () => {
+    try {
+      await loadGapiScript();
+      gapi.load("client:auth2", async () => {
+        await gapi.client.init({
+          apiKey: API_KEY,
+          clientId: CLIENT_ID,
+          discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
+          scope: SCOPES,
+        });
+        gapiInitialized = true;
+        console.log("GAPI Initialized");
+      });
+    } catch (error) {
+      console.error("Error loading GAPI:", error);
+      toast.error("Error initializing Google API client.");
+    }
+  }, [loadGapiScript]);
+
+  // Authenticate and get access token
+  const authenticate = useCallback(async () => {
+    if (!gapiInitialized) throw new Error("GAPI not initialized");
+    const GoogleAuth = gapi.auth2.getAuthInstance();
+    if (!GoogleAuth.isSignedIn.get()) {
+      await GoogleAuth.signIn();
+    }
+    return GoogleAuth.currentUser.get().getAuthResponse().access_token;
+  }, []);
+
+  // File Upload Handler
+  const handleUploadFile = async (e) => {
+    e.preventDefault();
+    setLoadingUpload(true);
+
+    if (!selectedFile) {
+      toast.error("Please select a file to upload.");
+      setLoadingUpload(false);
+      return;
+    }
+
+    try {
+      const accessToken = await authenticate();
+      const metadata = {
+        name: selectedFile.name,
+        mimeType: selectedFile.type,
+      };
+
+      const formData = new FormData();
+      formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
+      formData.append("file", selectedFile);
+
+      const response = await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        toast.success(`File uploaded successfully: ${data.name}`);
+        setSelectedFile(null);
+      } else {
+        toast.error("File upload failed.");
+      }
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      toast.error("An error occurred while uploading the file.");
+    } finally {
+      setLoadingUpload(false);
+    }
+  };
+
+  // Load GAPI on component mount
+  useEffect(() => {
+    loadGapi();
+  }, [loadGapi]);
+
+  // Handle form submission
   const handleSubmitForm = async (e) => {
     e.preventDefault();
     setLoadingForm(true);
 
-    // Frontend validation (optional but recommended)
     if (!formData.firstName || !formData.lastName || !formData.email) {
       toast.error("Please fill in all required fields.");
       setLoadingForm(false);
@@ -57,20 +158,13 @@ const RmaForm = () => {
     }
 
     try {
-      // Prepare FormData for form submission
       const formDataPayload = new FormData();
-
-      // Append form fields
       Object.keys(formData).forEach((key) => {
         formDataPayload.append(key, formData[key]);
       });
 
-      // Append an action identifier
-      formDataPayload.append("action", "submitForm");
-
-      // Send form data to GAS
       const googleScriptUrl =
-        "https://script.google.com/macros/s/AKfycbwhcHILKH1Oky3UrtaSZyKrUIteqlHI1nnbpOSnyX310EbNKIuR5zax_it7in0mTAym/exec"; // Replace with your actual Web App URL
+        "https://script.google.com/macros/s/AKfycbwhcHILKH1Oky3UrtaSZyKrUIteqlHI1nnbpOSnyX310EbNKIuR5zax_it7in0mTAym/exec";
 
       const response = await fetch(googleScriptUrl, {
         method: "POST",
@@ -81,7 +175,6 @@ const RmaForm = () => {
         const responseData = await response.json();
         if (responseData.status === "success") {
           toast.success("Form submitted successfully!");
-          // Reset the form
           setFormData({
             firstName: "",
             lastName: "",
@@ -98,110 +191,16 @@ const RmaForm = () => {
             acknowledgeShippingCosts: false,
           });
         } else {
-          const errorMsg = responseData.message || "Unknown error.";
-          toast.error("Form submission failed: " + errorMsg);
+          toast.error(`Form submission failed: ${responseData.message || "Unknown error."}`);
         }
       } else {
-        // Attempt to parse error message from response
-        let errorMessage = "An unknown error occurred.";
-        try {
-          const errorData = await response.json();
-          errorMessage = errorData.message || errorMessage;
-        } catch (err) {
-          // Parsing failed, keep default message
-        }
-        toast.error(`Error submitting the form: ${errorMessage}`);
+        toast.error("Error submitting the form.");
       }
     } catch (error) {
       console.error("Error submitting form:", error);
       toast.error("An error occurred while submitting the form.");
     } finally {
       setLoadingForm(false);
-    }
-  };
-
-  // Handle File Upload
-  const CLIENT_ID = '603351500773-o9smkof98e28rd06ksv3st0grbn8ochp.apps.googleusercontent.com';
-  const API_KEY = 'AIzaSyAux_TCLah82CLaEMVb7luoTtiSbx4c3Oo';
-  const SCOPES = 'https://www.googleapis.com/auth/drive.file';
-  
-  let gapiInitialized = false;
-  
-  // Load Google API Client
-  function loadGapi() {
-    gapi.load('client:auth2', async () => {
-      await gapi.client.init({
-        apiKey: API_KEY,
-        clientId: CLIENT_ID,
-        discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
-        scope: SCOPES,
-      });
-      gapiInitialized = true;
-      console.log('GAPI Initialized');
-    });
-  }
-  
-  loadGapi();
-  
-  // Authenticate and get access token
-  async function authenticate() {
-    if (!gapiInitialized) throw new Error('GAPI not initialized');
-    const GoogleAuth = gapi.auth2.getAuthInstance();
-    if (!GoogleAuth.isSignedIn.get()) {
-      await GoogleAuth.signIn();
-    }
-    return GoogleAuth.currentUser.get().getAuthResponse().access_token;
-  }
-  
-  // Replace the `handleUploadFile` function
-  const handleUploadFile = async (e) => {
-    e.preventDefault();
-    setLoadingUpload(true);
-  
-    if (!selectedFile) {
-      toast.error("Please select a file to upload.");
-      setLoadingUpload(false);
-      return;
-    }
-  
-    try {
-      // Authenticate and get access token
-      const accessToken = await authenticate();
-  
-      // Prepare file metadata and data
-      const metadata = {
-        name: selectedFile.name,
-        mimeType: selectedFile.type,
-      };
-  
-      const formData = new FormData();
-      formData.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-      formData.append('file', selectedFile);
-  
-      // Upload file to Google Drive
-      const response = await fetch(
-        'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-          body: formData,
-        }
-      );
-  
-      if (response.ok) {
-        const data = await response.json();
-        toast.success(`File uploaded successfully: ${data.name}`);
-        setSelectedFile(null); // Clear selected file after upload
-      } else {
-        toast.error('File upload failed.');
-      }
-    } catch (error) {
-      console.error('Error uploading file:', error);
-      toast.error('An error occurred while uploading the file.');
-    } finally {
-      setLoadingUpload(false);
     }
   };
 
