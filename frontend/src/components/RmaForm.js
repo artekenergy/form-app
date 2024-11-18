@@ -45,7 +45,7 @@ const RmaForm = () => {
     try {
       // Send form data to the Google Apps Script endpoint
       const response = await fetch(
-        "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec",
+        "https://script.google.com/macros/s/AKfycbwp32d35d0eCxd_sMe-vyJr6EQ49blcSGAXp8q9KDSG2KRjqMeB89F6b2bLcHwbfZ9z/exec",
         {
           method: "POST",
           headers: {
