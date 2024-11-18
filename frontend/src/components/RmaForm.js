@@ -143,51 +143,43 @@ const RmaForm = () => {
   const handleSubmitForm = async (e) => {
     e.preventDefault();
     setLoadingForm(true);
-
+  
     if (!formData.firstName || !formData.lastName || !formData.email) {
       toast.error("Please fill in all required fields.");
       setLoadingForm(false);
       return;
     }
-
+  
     try {
-      const formDataPayload = new FormData();
-      Object.keys(formData).forEach((key) => {
-        formDataPayload.append(key, formData[key]);
+      const response = await fetch('http://localhost:5000/submit-form', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
       });
-
-      const googleScriptUrl =
-        "https://script.google.com/macros/s/AKfycbwhcHILKH1Oky3UrtaSZyKrUIteqlHI1nnbpOSnyX310EbNKIuR5zax_it7in0mTAym/exec";
-
-      const response = await fetch(googleScriptUrl, {
-        method: "POST",
-        body: formDataPayload,
-      });
-
-      if (response.ok) {
-        const responseData = await response.json();
-        if (responseData.status === "success") {
-          toast.success("Form submitted successfully!");
-          setFormData({
-            firstName: "",
-            lastName: "",
-            company: "",
-            email: "",
-            phone: "",
-            shippingAddress: "",
-            serialNumber: "",
-            installationDate: "",
-            failureDate: "",
-            firmwareUpdated: "",
-            firmwareVersion: "",
-            failureDescription: "",
-            acknowledgeShippingCosts: false,
-          });
-        } else {
-          toast.error(`Form submission failed: ${responseData.message || "Unknown error."}`);
-        }
+  
+      const responseData = await response.json();
+  
+      if (response.ok && responseData.status === 'success') {
+        toast.success("Form submitted successfully!");
+        setFormData({
+          firstName: "",
+          lastName: "",
+          company: "",
+          email: "",
+          phone: "",
+          shippingAddress: "",
+          serialNumber: "",
+          installationDate: "",
+          failureDate: "",
+          firmwareUpdated: "",
+          firmwareVersion: "",
+          failureDescription: "",
+          acknowledgeShippingCosts: false,
+        });
       } else {
-        toast.error("Error submitting the form.");
+        toast.error(`Form submission failed: ${responseData.message || "Unknown error."}`);
       }
     } catch (error) {
       console.error("Error submitting form:", error);
