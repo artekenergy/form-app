@@ -40,8 +40,50 @@ const RmaForm = () => {
     setSelectedFile(file)
   }
 
-  const handleFormSubmit = () => {
-    toast.success("Submitting form directly to server!")
+  const handleFormSubmit = async (e) => {
+    e.preventDefault()
+    try {
+      // Send form data to the Google Apps Script endpoint
+      const response = await fetch(
+        "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded", // Form data
+          },
+          body: new URLSearchParams(formData), // Serialize form data
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const responseData = await response.json()
+      if (responseData.status === "success") {
+        toast.success("Form submitted successfully!")
+        setFormData({
+          firstName: "",
+          lastName: "",
+          company: "",
+          email: "",
+          phone: "",
+          shippingAddress: "",
+          serialNumber: "",
+          installationDate: "",
+          failureDate: "",
+          firmwareUpdated: "",
+          firmwareVersion: "",
+          failureDescription: "",
+          acknowledgeShippingCosts: false,
+        })
+      } else {
+        throw new Error(responseData.message || "Unknown error occurred.")
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error)
+      toast.error("Failed to submit the form. Please try again.")
+    }
   }
 
   const handleUploadFile = async (e) => {
@@ -55,11 +97,28 @@ const RmaForm = () => {
     }
 
     try {
-      // Implement your file upload logic here
-      toast.success("File uploaded successfully!")
+      const formData = new FormData()
+      formData.append("file", selectedFile)
+
+      const response = await fetch(
+        "https://script.google.com/macros/s/AKfycbzks894oFkDsQ0zCCcSGGyR08Z2kN5H_jL2ycKWqCQiL8Vrqm9voZnmTE48YSSdQlx4/exec",
+        {
+          method: "POST",
+          body: formData,
+        }
+      )
+
+      const responseData = await response.json()
+
+      if (response.ok && responseData.status === "success") {
+        toast.success("File uploaded successfully!")
+        setSelectedFile(null)
+      } else {
+        throw new Error(responseData.message || "Unknown error.")
+      }
     } catch (error) {
       console.error("Error uploading file:", error)
-      toast.error("An error occurred while uploading the file.")
+      toast.error("Failed to upload the file. Please try again.")
     } finally {
       setLoadingUpload(false)
     }
@@ -67,16 +126,9 @@ const RmaForm = () => {
 
   return (
     <>
-      {/* Form for submitting main RMA details */}
-      <form
-        action="https://script.google.com/macros/s/AKfycbxTkfwAXnlyJw54Pr5XjNuX94y_8JYRX2xUT3fpRoqdJVFLtLEUi9h_KRTKcMWb755y/exec"
-        method="POST"
-        target="_blank" // Opens the response in a new tab
-        onSubmit={handleFormSubmit}
-      >
+      {/* RMA Form Submission */}
+      <form onSubmit={handleFormSubmit}>
         <h1>RMA Form</h1>
-        <h2>PART I - Contact</h2>
-
         <TextInput
           label="First Name:"
           name="firstName"
