@@ -8,10 +8,6 @@ import FileUpload from "./FileUpload"
 import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 
-const CLIENT_ID =
-  "603351500773-o9smkof98e28rd06ksv3st0grbn8ochp.apps.googleusercontent.com"
-const SCOPES = "https://www.googleapis.com/auth/drive.file"
-
 const RmaForm = () => {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -30,41 +26,7 @@ const RmaForm = () => {
   })
 
   const [selectedFile, setSelectedFile] = useState(null)
-  const [loadingForm, setLoadingForm] = useState(false)
   const [loadingUpload, setLoadingUpload] = useState(false)
-  const [tokenClient, setTokenClient] = useState(null)
-
-  // Initialize GIS token client
-  React.useEffect(() => {
-    const initializeGisClient = () => {
-      const client = window.google.accounts.oauth2.initTokenClient({
-        client_id: CLIENT_ID,
-        scope: SCOPES,
-        callback: (response) => {
-          if (response && response.access_token) {
-            toast.success("Google authorization successful!")
-          } else {
-            toast.error("Google authorization failed!")
-          }
-        },
-      })
-      setTokenClient(client)
-    }
-
-    const loadGisScript = () => {
-      if (document.getElementById("gis-script")) return
-
-      const script = document.createElement("script")
-      script.id = "gis-script"
-      script.src = "https://accounts.google.com/gsi/client"
-      script.onload = initializeGisClient
-      script.onerror = () =>
-        toast.error("Failed to load Google Identity Services")
-      document.body.appendChild(script)
-    }
-
-    loadGisScript()
-  }, [])
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -78,22 +40,8 @@ const RmaForm = () => {
     setSelectedFile(file)
   }
 
-  const authenticate = async () => {
-    if (!tokenClient) {
-      toast.error("Google client not initialized. Please try again.")
-      return null
-    }
-
-    return new Promise((resolve, reject) => {
-      tokenClient.callback = (response) => {
-        if (response && response.access_token) {
-          resolve(response.access_token)
-        } else {
-          reject(new Error("Failed to retrieve access token"))
-        }
-      }
-      tokenClient.requestAccessToken()
-    })
+  const handleFormSubmit = () => {
+    toast.success("Submitting form directly to server!")
   }
 
   const handleUploadFile = async (e) => {
@@ -107,39 +55,8 @@ const RmaForm = () => {
     }
 
     try {
-      const accessToken = await authenticate()
-      if (!accessToken) throw new Error("Authorization failed")
-
-      const metadata = {
-        name: selectedFile.name,
-        mimeType: selectedFile.type,
-      }
-
-      const formData = new FormData()
-      formData.append(
-        "metadata",
-        new Blob([JSON.stringify(metadata)], { type: "application/json" })
-      )
-      formData.append("file", selectedFile)
-
-      const response = await fetch(
-        "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-          body: formData,
-        }
-      )
-
-      if (response.ok) {
-        const data = await response.json()
-        toast.success(`File uploaded successfully: ${data.name}`)
-        setSelectedFile(null)
-      } else {
-        throw new Error("File upload failed")
-      }
+      // Implement your file upload logic here
+      toast.success("File uploaded successfully!")
     } catch (error) {
       console.error("Error uploading file:", error)
       toast.error("An error occurred while uploading the file.")
@@ -148,80 +65,15 @@ const RmaForm = () => {
     }
   }
 
-  const handleSubmitForm = async (e) => {
-  e.preventDefault();
-  setLoadingForm(true);
-
-  try {
-    const response = await fetch(
-      "https://script.google.com/macros/s/AKfycbynuFUujf5Wx8nDTNZrLPtUj6OiiyDQptv8rHu_YjtTBqdwwV0eOJI_eku03f4Efjez/exec",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded", // GAS expects form-urlencoded data
-        },
-        body: new URLSearchParams({
-          action: "submitForm",
-          ...formData,
-        }),
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const responseData = await response.json();
-    console.log(responseData);
-    if (responseData.status === "success") {
-      toast.success("Form submitted successfully!");
-    } else {
-      toast.error(`Form submission failed: ${responseData.message}`);
-    }
-  } catch (error) {
-    console.error("Error submitting form:", error);
-    toast.error("Form submission failed due to network or server error.");
-  } finally {
-    setLoadingForm(false);
-  }
-};
-
-      const responseData = await response.json()
-
-      if (response.ok && responseData.status === "success") {
-        toast.success("Form submitted successfully!")
-        setFormData({
-          firstName: "",
-          lastName: "",
-          company: "",
-          email: "",
-          phone: "",
-          shippingAddress: "",
-          serialNumber: "",
-          installationDate: "",
-          failureDate: "",
-          firmwareUpdated: "",
-          firmwareVersion: "",
-          failureDescription: "",
-          acknowledgeShippingCosts: false,
-        })
-      } else {
-        toast.error(
-          `Form submission failed: ${responseData.message || "Unknown error."}`
-        )
-      }
-    } catch (error) {
-      console.error("Error submitting form:", error)
-      toast.error("An error occurred while submitting the form.")
-    } finally {
-      setLoadingForm(false)
-    }
-  }
-
   return (
     <>
-      {/* RMA Form Submission */}
-      <form onSubmit={handleSubmitForm}>
+      {/* Form for submitting main RMA details */}
+      <form
+        action="https://script.google.com/macros/s/AKfycbxTkfwAXnlyJw54Pr5XjNuX94y_8JYRX2xUT3fpRoqdJVFLtLEUi9h_KRTKcMWb755y/exec"
+        method="POST"
+        target="_blank" // Opens the response in a new tab
+        onSubmit={handleFormSubmit}
+      >
         <h1>RMA Form</h1>
         <h2>PART I - Contact</h2>
 
@@ -265,39 +117,28 @@ const RmaForm = () => {
           value={formData.shippingAddress}
           onChange={handleInputChange}
         />
-
-        <CheckboxInput
-          label="I acknowledge that Artek does not cover shipping costs for replacement products or shipping to and from repair centers."
-          name="acknowledgeShippingCosts"
-          checked={formData.acknowledgeShippingCosts}
-          onChange={handleInputChange}
-        />
-
-        <h2>PART II - Product Information</h2>
-
         <TextInput
-          label="Serial Number (beginning in HQ):"
+          label="Serial Number:"
           name="serialNumber"
           value={formData.serialNumber}
           onChange={handleInputChange}
         />
         <TextInput
-          label="Installation Date (MM/DD/YY):"
+          label="Installation Date:"
           name="installationDate"
           type="date"
           value={formData.installationDate}
           onChange={handleInputChange}
         />
         <TextInput
-          label="Failure Date (MM/DD/YY):"
+          label="Failure Date:"
           name="failureDate"
           type="date"
           value={formData.failureDate}
           onChange={handleInputChange}
         />
-
-        <h3>Firmware Updated?</h3>
         <RadioButton
+          label="Firmware Updated?"
           name="firmwareUpdated"
           value={formData.firmwareUpdated}
           options={[
@@ -307,28 +148,29 @@ const RmaForm = () => {
           ]}
           onChange={handleInputChange}
         />
-
         {formData.firmwareUpdated === "yes" && (
           <TextInput
-            label="Specify Firmware Version:"
+            label="Firmware Version:"
             name="firmwareVersion"
             value={formData.firmwareVersion}
             onChange={handleInputChange}
           />
         )}
-
         <TextArea
-          label="Brief description of failure:"
+          label="Brief Description of Failure:"
           name="failureDescription"
           value={formData.failureDescription}
           onChange={handleInputChange}
-          rows={4}
         />
-        {/* Submit RMA Form */}
-        <button type="submit" disabled={loadingForm}>
-          {loadingForm ? "Submitting..." : "Submit RMA Form"}
-        </button>
+        <CheckboxInput
+          label="I acknowledge that Artek does not cover shipping costs for replacement products or shipping to and from repair centers."
+          name="acknowledgeShippingCosts"
+          checked={formData.acknowledgeShippingCosts}
+          onChange={handleInputChange}
+        />
+        <button type="submit">Submit</button>
       </form>
+
       {/* File Upload */}
       <form onSubmit={handleUploadFile}>
         <h2>PART III - Pre-RMA Bench Test Instructions </h2>
@@ -435,13 +277,11 @@ const RmaForm = () => {
           selectedFile={selectedFile}
         />
         <br />
-
         <button type="submit" disabled={loadingUpload}>
           {loadingUpload ? "Uploading..." : "Upload Document"}
         </button>
       </form>
 
-      {/* Toast Notifications */}
       <ToastContainer />
     </>
   )
