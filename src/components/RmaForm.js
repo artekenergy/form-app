@@ -121,52 +121,85 @@ const RmaForm = () => {
   };
 
   // Handle File Upload
+  const CLIENT_ID = '603351500773-o9smkof98e28rd06ksv3st0grbn8ochp.apps.googleusercontent.com';
+  const API_KEY = 'AIzaSyAux_TCLah82CLaEMVb7luoTtiSbx4c3Oo';
+  const SCOPES = 'https://www.googleapis.com/auth/drive.file';
+  
+  let gapiInitialized = false;
+  
+  // Load Google API Client
+  function loadGapi() {
+    gapi.load('client:auth2', async () => {
+      await gapi.client.init({
+        apiKey: API_KEY,
+        clientId: CLIENT_ID,
+        discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
+        scope: SCOPES,
+      });
+      gapiInitialized = true;
+      console.log('GAPI Initialized');
+    });
+  }
+  
+  loadGapi();
+  
+  // Authenticate and get access token
+  async function authenticate() {
+    if (!gapiInitialized) throw new Error('GAPI not initialized');
+    const GoogleAuth = gapi.auth2.getAuthInstance();
+    if (!GoogleAuth.isSignedIn.get()) {
+      await GoogleAuth.signIn();
+    }
+    return GoogleAuth.currentUser.get().getAuthResponse().access_token;
+  }
+  
+  // Replace the `handleUploadFile` function
   const handleUploadFile = async (e) => {
     e.preventDefault();
     setLoadingUpload(true);
-
+  
     if (!selectedFile) {
       toast.error("Please select a file to upload.");
       setLoadingUpload(false);
       return;
     }
-
+  
     try {
-      // Prepare FormData for file upload
-      const formDataPayload = new FormData();
-
-      // Append the file
-      formDataPayload.append("uploadedFile", selectedFile, selectedFile.name);
-
-      // Append an action identifier
-      formDataPayload.append("action", "uploadFile");
-
-      // Send file to GAS
-      const googleScriptUrl =
-        "https://script.google.com/macros/s/AKfycbwhcHILKH1Oky3UrtaSZyKrUIteqlHI1nnbpOSnyX310EbNKIuR5zax_it7in0mTAym/exec"; // Same Web App URL as form submissi
-
-
-
-      const response = await fetch(googleScriptUrl, {
-        method: "POST",
-        body: formDataPayload,
-      });
-
-      if (response.ok) {
-        const responseData = await response.json();
-        if (responseData.status === "success") {
-          toast.success("File uploaded successfully!");
-          setSelectedFile(null);
-        } else {
-          const errorMsg = responseData.message || "Unknown error.";
-          toast.error("File upload failed: " + errorMsg);
+      // Authenticate and get access token
+      const accessToken = await authenticate();
+  
+      // Prepare file metadata and data
+      const metadata = {
+        name: selectedFile.name,
+        mimeType: selectedFile.type,
+      };
+  
+      const formData = new FormData();
+      formData.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+      formData.append('file', selectedFile);
+  
+      // Upload file to Google Drive
+      const response = await fetch(
+        'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: formData,
         }
+      );
+  
+      if (response.ok) {
+        const data = await response.json();
+        toast.success(`File uploaded successfully: ${data.name}`);
+        setSelectedFile(null); // Clear selected file after upload
       } else {
-        toast.error("Error uploading the file.");
+        toast.error('File upload failed.');
       }
     } catch (error) {
-      console.error("Error uploading file:", error);
-      toast.error("An error occurred while uploading the file.");
+      console.error('Error uploading file:', error);
+      toast.error('An error occurred while uploading the file.');
     } finally {
       setLoadingUpload(false);
     }
