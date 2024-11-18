@@ -40,12 +40,14 @@ const RmaForm = () => {
     setSelectedFile(file)
   }
 
+  const PROXY_URL = "https://intense-lowlands-99325-ca282954e831.herokuapp.com/"
+
   const handleFormSubmit = async (e) => {
     e.preventDefault()
     try {
-      // Send form data to the Google Apps Script endpoint
+      // Send form data to the Google Apps Script endpoint through the proxy
       const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbwp32d35d0eCxd_sMe-vyJr6EQ49blcSGAXp8q9KDSG2KRjqMeB89F6b2bLcHwbfZ9z/exec",
+        `${PROXY_URL}https://script.google.com/macros/s/AKfycbyenbHU-UPD9rrKMQFpkDOoNlsdcGrqN7oyVRHKIy8OrJXWNrT6pdwMUPs2I35j8zZ7/exec`,
         {
           method: "POST",
           headers: {
@@ -100,8 +102,9 @@ const RmaForm = () => {
       const formData = new FormData()
       formData.append("file", selectedFile)
 
+      // Send file data to the Google Apps Script endpoint through the proxy
       const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbwp32d35d0eCxd_sMe-vyJr6EQ49blcSGAXp8q9KDSG2KRjqMeB89F6b2bLcHwbfZ9z/exec",
+        `${PROXY_URL}https://script.google.com/macros/s/AKfycbyenbHU-UPD9rrKMQFpkDOoNlsdcGrqN7oyVRHKIy8OrJXWNrT6pdwMUPs2I35j8zZ7/exec`,
         {
           method: "POST",
           body: formData,
@@ -123,7 +126,6 @@ const RmaForm = () => {
       setLoadingUpload(false)
     }
   }
-
   return (
     <>
       {/* RMA Form Submission */}
