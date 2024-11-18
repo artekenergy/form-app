@@ -160,7 +160,7 @@ const RmaForm = () => {
 
     try {
       const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbwhcHILKH1Oky3UrtaSZyKrUIteqlHI1nnbpOSnyX310EbNKIuR5zax_it7in0mTAym/exec",
+        "https://script.google.com/macros/s/AKfycbz_NTRp8PJJQHyD5ENLoidvHUNZnJO8rp7B976_8noWISPoqS-buQlIdOloe8uPtBIo/exec",
         {
           method: "POST",
           headers: {
