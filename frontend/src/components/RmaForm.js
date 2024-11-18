@@ -149,29 +149,42 @@ const RmaForm = () => {
   }
 
   const handleSubmitForm = async (e) => {
-    e.preventDefault()
-    setLoadingForm(true)
+  e.preventDefault();
+  setLoadingForm(true);
 
-    if (!formData.firstName || !formData.lastName || !formData.email) {
-      toast.error("Please fill in all required fields.")
-      setLoadingForm(false)
-      return
+  try {
+    const response = await fetch(
+      "https://script.google.com/macros/s/AKfycbynuFUujf5Wx8nDTNZrLPtUj6OiiyDQptv8rHu_YjtTBqdwwV0eOJI_eku03f4Efjez/exec",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded", // GAS expects form-urlencoded data
+        },
+        body: new URLSearchParams({
+          action: "submitForm",
+          ...formData,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    try {
-      const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbwNBnX8mD_1jNiqRkt88VV4a8u2BrIIa8gTtvm0NGW0YGp12-UbIVp8HniLiVuKNtlt/exec",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded", // GAS expects form-urlencoded data
-          },
-          body: new URLSearchParams({
-            action: "submitForm",
-            ...formData,
-          }),
-        }
-      )
+    const responseData = await response.json();
+    console.log(responseData);
+    if (responseData.status === "success") {
+      toast.success("Form submitted successfully!");
+    } else {
+      toast.error(`Form submission failed: ${responseData.message}`);
+    }
+  } catch (error) {
+    console.error("Error submitting form:", error);
+    toast.error("Form submission failed due to network or server error.");
+  } finally {
+    setLoadingForm(false);
+  }
+};
 
       const responseData = await response.json()
 
