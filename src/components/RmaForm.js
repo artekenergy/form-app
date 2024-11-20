@@ -29,6 +29,7 @@ const RmaForm = () => {
   })
 
   const [selectedFile, setSelectedFile] = useState(null)
+  const [isSubmitting, setIsSubmitting] = useState(false) // State to manage submission status
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -44,9 +45,11 @@ const RmaForm = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault()
+    setIsSubmitting(true) // Set submitting state to true
     try {
       if (!selectedFile) {
         toast.error("Please upload a file before submitting.")
+        setIsSubmitting(false) // Reset submitting state
         return
       }
 
@@ -110,6 +113,8 @@ const RmaForm = () => {
     } catch (error) {
       console.error("Error submitting form:", error)
       toast.error("Failed to submit the form. Please try again.")
+    } finally {
+      setIsSubmitting(false) // Reset submitting state
     }
   }
 
@@ -314,7 +319,10 @@ const RmaForm = () => {
           selectedFile={selectedFile}
         />
 
-        <button type="submit">Submit</button>
+        {/* Submit Button */}
+        <button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Submitting..." : "Submit"}
+        </button>
       </form>
 
       <ToastContainer />
