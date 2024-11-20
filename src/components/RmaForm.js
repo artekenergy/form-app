@@ -9,7 +9,7 @@ import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 
 const GAS_WEB_APP_URL =
-  "https://script.google.com/macros/s/AKfycbzhCKBv6ULt8CK1jqvY5edVRb69Gu9VNLiPXSWYpN6KjLrQRGPg2RnxJz5pKasF1ox-/exec" // Replace with your deployment URL
+  "https://script.google.com/macros/s/AKfycbzMmHQu2MU3IfYVruCkw2WUDJUnCA7SoqPUh9lwerA_a9NrRytDOBQ-syUmfeR8SBXh/exec" // Replace with your deployment URL
 
 const RmaForm = () => {
   const [formData, setFormData] = useState({
@@ -48,27 +48,33 @@ const RmaForm = () => {
     try {
       // Prepare URL-encoded form data
       const urlEncodedData = new URLSearchParams()
-      urlEncodedData.append("action", "submitForm")
+      urlEncodedData.append("action", "submitForm") // Add action parameter
       for (const key in formData) {
         if (formData.hasOwnProperty(key)) {
           urlEncodedData.append(key, formData[key])
         }
       }
 
-      // Send form data to the Google Apps Script endpoint
+      // Debugging: Log the serialized payload
+      console.log("Submitting Form Data:", urlEncodedData.toString())
+
+      // Send form data to the GAS endpoint
       const response = await fetch(GAS_WEB_APP_URL, {
         method: "POST",
         headers: {
-          "Content-Type": "text/plain;charset=utf-8",
+          "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
         },
         body: urlEncodedData.toString(),
       })
 
+      // Parse and handle response
       const responseText = await response.text()
+      console.log("GAS Response:", responseText)
       const responseData = JSON.parse(responseText)
 
-      if (responseData.status === "success") {
+      if (response.ok && responseData.status === "success") {
         toast.success("Form submitted successfully!")
+        // Reset form
         setFormData({
           firstName: "",
           lastName: "",
