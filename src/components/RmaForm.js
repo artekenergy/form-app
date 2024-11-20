@@ -8,6 +8,9 @@ import FileUpload from "./FileUpload"
 import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 
+const GAS_WEB_APP_URL =
+  "https://script.google.com/macros/s/AKfycbzCW2_PXYOs7YwH3e-orYT6nG-QptGmzOxJe2GdcDeyTyb6_EVjfdhNFrfILeKRIDUv/exec" // Replace with your deployment URL
+
 const RmaForm = () => {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -40,28 +43,30 @@ const RmaForm = () => {
     setSelectedFile(file)
   }
 
-  const PROXY_URL = "https://intense-lowlands-99325-ca282954e831.herokuapp.com/"
-
   const handleFormSubmit = async (e) => {
     e.preventDefault()
     try {
-      // Send form data to the Google Apps Script endpoint through the proxy
-      const response = await fetch(
-        `${PROXY_URL}https://script.google.com/macros/s/AKfycbzCW2_PXYOs7YwH3e-orYT6nG-QptGmzOxJe2GdcDeyTyb6_EVjfdhNFrfILeKRIDUv/exec`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded", // Form data
-          },
-          body: new URLSearchParams(formData), // Serialize form data
+      // Prepare URL-encoded form data
+      const urlEncodedData = new URLSearchParams()
+      urlEncodedData.append("action", "submitForm")
+      for (const key in formData) {
+        if (formData.hasOwnProperty(key)) {
+          urlEncodedData.append(key, formData[key])
         }
-      )
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
       }
 
-      const responseData = await response.json()
+      // Send form data to the Google Apps Script endpoint
+      const response = await fetch(GAS_WEB_APP_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8",
+        },
+        body: urlEncodedData.toString(),
+      })
+
+      const responseText = await response.text()
+      const responseData = JSON.parse(responseText)
+
       if (responseData.status === "success") {
         toast.success("Form submitted successfully!")
         setFormData({
@@ -99,21 +104,37 @@ const RmaForm = () => {
     }
 
     try {
-      const formData = new FormData()
-      formData.append("file", selectedFile)
-
-      // Send file data to the Google Apps Script endpoint through the proxy
-      const response = await fetch(
-        `${PROXY_URL}https://script.google.com/macros/s/AKfycbzCW2_PXYOs7YwH3e-orYT6nG-QptGmzOxJe2GdcDeyTyb6_EVjfdhNFrfILeKRIDUv/exec`,
-        {
-          method: "POST",
-          body: formData,
+      // Read the file as Base64
+      const fileBase64 = await new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.readAsDataURL(selectedFile)
+        reader.onload = () => {
+          const base64String = reader.result.split(",")[1] // Remove the Data URL prefix
+          resolve(base64String)
         }
-      )
+        reader.onerror = (error) => reject(error)
+      })
 
-      const responseData = await response.json()
+      // Prepare URL-encoded data for the file upload
+      const urlEncodedData = new URLSearchParams()
+      urlEncodedData.append("action", "uploadFile")
+      urlEncodedData.append("fileName", selectedFile.name)
+      urlEncodedData.append("fileType", selectedFile.type)
+      urlEncodedData.append("fileData", fileBase64)
 
-      if (response.ok && responseData.status === "success") {
+      // Send file data to the Google Apps Script endpoint
+      const response = await fetch(GAS_WEB_APP_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8",
+        },
+        body: urlEncodedData.toString(),
+      })
+
+      const responseText = await response.text()
+      const responseData = JSON.parse(responseText)
+
+      if (responseData.status === "success") {
         toast.success("File uploaded successfully!")
         setSelectedFile(null)
       } else {
@@ -126,6 +147,7 @@ const RmaForm = () => {
       setLoadingUpload(false)
     }
   }
+
   return (
     <>
       {/* RMA Form Submission */}
@@ -330,7 +352,6 @@ const RmaForm = () => {
           onFileChange={handleFileChange}
           selectedFile={selectedFile}
         />
-        <br />
         <button type="submit" disabled={loadingUpload}>
           {loadingUpload ? "Uploading..." : "Upload Document"}
         </button>
