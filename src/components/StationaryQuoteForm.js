@@ -251,13 +251,13 @@ const StationaryQuoteForm = () => {
         label="DIY Installation"
         name="services.diyInstallation"
         checked={formData.services.diyInstallation}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
       <CheckboxInput
         label="Pre-wired Board by Artek"
         name="services.preWiredBoard"
         checked={formData.services.preWiredBoard}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <h3>Platform</h3>
@@ -265,7 +265,7 @@ const StationaryQuoteForm = () => {
         label="Platform (e.g., off-grid cabin, battery backup system, etc.):"
         name="platform"
         value={formData.platform}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <h3>Application</h3>
@@ -278,14 +278,14 @@ const StationaryQuoteForm = () => {
           { label: "Recreational", value: "recreational" },
           { label: "Other", value: "other" },
         ]}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
       {formData.application.type === "commercial" && (
         <TextInput
           label="Please specify Commercial details:"
           name="application.commercialDetails"
           value={formData.application.commercialDetails}
-          onChange={handleChange}
+          onChange={handleInputChange}
         />
       )}
       {formData.application.type === "recreational" && (
@@ -293,7 +293,7 @@ const StationaryQuoteForm = () => {
           label="Please specify Recreational details:"
           name="application.recreationalDetails"
           value={formData.application.recreationalDetails}
-          onChange={handleChange}
+          onChange={handleInputChange}
         />
       )}
       {formData.application.type === "other" && (
@@ -301,7 +301,7 @@ const StationaryQuoteForm = () => {
           label="Please specify Other details:"
           name="application.otherDetails"
           value={formData.application.otherDetails}
-          onChange={handleChange}
+          onChange={handleInputChange}
         />
       )}
 
@@ -314,7 +314,7 @@ const StationaryQuoteForm = () => {
           { label: "Off-grid", value: "offGrid" },
           { label: "Grid-tied", value: "gridTied" },
         ]}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
       {formData.system.systemType === "gridTied" && (
         <RadioButton
@@ -325,7 +325,7 @@ const StationaryQuoteForm = () => {
             { label: "Yes", value: "yes" },
             { label: "No", value: "no" },
           ]}
-          onChange={handleChange}
+          onChange={handleInputChange}
         />
       )}
 
@@ -339,14 +339,14 @@ const StationaryQuoteForm = () => {
           { label: "3 phase 208V", value: "208V" },
           { label: "3 phase 480V", value: "480V" },
         ]}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <TextInput
         label="Inverter Capacity (e.g., 20 amp 240V supply):"
         name="system.inverterCapacity"
         value={formData.system.inverterCapacity}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <h3>High-draw appliances</h3>
@@ -354,52 +354,52 @@ const StationaryQuoteForm = () => {
         label="Air Conditioner"
         name="system.highDrawAppliances.airConditioner"
         checked={formData.system.highDrawAppliances.airConditioner}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
       {formData.system.highDrawAppliances.airConditioner && (
         <TextInput
           label="Please specify make and model:"
           name="system.highDrawAppliances.airConditionerSpecs"
           value={formData.system.highDrawAppliances.airConditionerSpecs}
-          onChange={handleChange}
+          onChange={handleInputChange}
         />
       )}
       <CheckboxInput
         label="Induction Cookstove"
         name="system.highDrawAppliances.inductionCookstove"
         checked={formData.system.highDrawAppliances.inductionCookstove}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
       <CheckboxInput
         label="Microwave"
         name="system.highDrawAppliances.microwave"
         checked={formData.system.highDrawAppliances.microwave}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
       <CheckboxInput
         label="Hair Dryer"
         name="system.highDrawAppliances.hairDryer"
         checked={formData.system.highDrawAppliances.hairDryer}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
       <CheckboxInput
         label="Blender"
         name="system.highDrawAppliances.blender"
         checked={formData.system.highDrawAppliances.blender}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
       <CheckboxInput
         label="Other"
         name="system.highDrawAppliances.otherAppliances"
         checked={formData.system.highDrawAppliances.otherAppliances}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
       {formData.system.highDrawAppliances.otherAppliances && (
         <TextInput
           label="Please specify:"
           name="system.highDrawAppliances.other"
           value={formData.system.highDrawAppliances.other}
-          onChange={handleChange}
+          onChange={handleInputChange}
         />
       )}
       <RadioButton
@@ -410,7 +410,7 @@ const StationaryQuoteForm = () => {
           { label: "Yes", value: "yes" },
           { label: "No", value: "no" },
         ]}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <RadioButton
@@ -421,7 +421,7 @@ const StationaryQuoteForm = () => {
           { label: "Yes", value: "yes" },
           { label: "No", value: "no" },
         ]}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       {formData.system.generator.hasGenerator === "yes" && (
@@ -430,7 +430,7 @@ const StationaryQuoteForm = () => {
             label="Please specify the generator make and model:"
             name="system.generator.makeModel"
             value={formData.system.generator.makeModel}
-            onChange={handleChange}
+            onChange={handleInputChange}
           />
 
           <RadioButton
@@ -441,7 +441,7 @@ const StationaryQuoteForm = () => {
               { label: "No", value: "no" },
               { label: "Yes", value: "yes" },
             ]}
-            onChange={handleChange}
+            onChange={handleInputChange}
           />
         </>
       )}
@@ -451,7 +451,7 @@ const StationaryQuoteForm = () => {
         label="How much solar would you ideally like to include? (Watts)"
         name="system.solarAmount"
         value={formData.system.solarAmount}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
       <RadioButton
         label="What type of solar mount do you prefer?"
@@ -462,7 +462,7 @@ const StationaryQuoteForm = () => {
           { label: "Ground mount", value: "ground" },
           { label: "Both", value: "both" },
         ]}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <h3>System Voltage</h3>
@@ -475,39 +475,39 @@ const StationaryQuoteForm = () => {
           { label: "24V", value: "24V" },
           { label: "48V", value: "48V" },
         ]}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
       <TextInput
         label="Please explain why you prefer this voltage:"
         name="system.preferredVoltageExplanation"
         value={formData.system.preferredVoltageExplanation}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <TextInput
         label="Do you have a preferred battery bank capacity (in Kw or Ah)?"
         name="system.batteryBankCapacity"
         value={formData.system.batteryBankCapacity}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <TextInput
         label="What is your budget?"
         name="system.budget"
         value={formData.system.budget}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
       <TextInput
         label="What is your timeline?"
         name="system.timeline"
         value={formData.system.timeline}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
       <TextArea
         label="Any other details you would like us to know?"
         name="system.additionalDetails"
         value={formData.system.additionalDetails}
-        onChange={handleChange}
+        onChange={handleInputChange}
         rows={6}
       />
 
