@@ -1,15 +1,13 @@
-// StationaryQuoteForm.jsx
-import React, { useState } from "react"
-import TextInput from "./TextInput"
-import CheckboxInput from "./CheckboxInput"
-import NumberInput from "./NumberInput"
-import RadioButton from "./RadioButton"
-import TextArea from "./TextArea"
-import { ToastContainer, toast } from "react-toastify"
-import "react-toastify/dist/ReactToastify.css"
+import React, { useState } from "react";
+import TextInput from "./TextInput";
+import RadioButton from "./RadioButton";
+import CheckboxInput from "./CheckboxInput";
+import TextArea from "./TextArea";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const GAS_WEB_APP_URL =
-  "https://script.google.com/macros/s/AKfycbyVYcJ6iOSnHngc6fzr4-tDJmYLMgVs6vYtAuHvnMBRZ26IOOovoXKtWm5z_1F2v31S/exec"
+  "https://script.google.com/macros/s/AKfycbwo8XLlQkt4R_-ItXEvwUeF27-n76HuA4AO_FmifqEVe9bsAh6j41NQ8Czmt0cFd0Sn/exec";
 
 const StationaryQuoteForm = () => {
   const [formData, setFormData] = useState({
@@ -65,36 +63,33 @@ const StationaryQuoteForm = () => {
       timeline: "",
       additionalDetails: "",
     },
-  })
+  });
 
-  const [isSubmitting, setIsSubmitting] = useState(false) // Manage submission state
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target
-    const keys = name.split(".")
-    setFormData((prevFormData) => {
-      let data = { ...prevFormData }
-      let current = data
+    const { name, value, type, checked } = e.target;
+    const keys = name.split(".");
+    setFormData((prevData) => {
+      let data = { ...prevData };
+      let current = data;
       for (let i = 0; i < keys.length - 1; i++) {
-        if (!current[keys[i]]) {
-          current[keys[i]] = {}
-        }
-        current = current[keys[i]]
+        if (!current[keys[i]]) current[keys[i]] = {};
+        current = current[keys[i]];
       }
-      current[keys[keys.length - 1]] = type === "checkbox" ? checked : value
-      return data
-    })
-  }
+      current[keys[keys.length - 1]] = type === "checkbox" ? checked : value;
+      return data;
+    });
+  };
 
   const handleFormSubmit = async (e) => {
-    e.preventDefault()
-    setIsSubmitting(true) // Start submission state
+    e.preventDefault();
+    setIsSubmitting(true);
     try {
-      const urlEncodedData = new URLSearchParams()
-      urlEncodedData.append("action", "submitAndUpload")
+      const urlEncodedData = new URLSearchParams();
       for (const key in formData) {
         if (formData.hasOwnProperty(key)) {
-          urlEncodedData.append(key, JSON.stringify(formData[key]))
+          urlEncodedData.append(key, JSON.stringify(formData[key]));
         }
       }
 
@@ -104,13 +99,13 @@ const StationaryQuoteForm = () => {
           "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
         },
         body: urlEncodedData.toString(),
-      })
+      });
 
-      const responseText = await response.text()
-      const responseData = JSON.parse(responseText)
+      const responseText = await response.text();
+      const responseData = JSON.parse(responseText);
 
       if (response.ok && responseData.status === "success") {
-        toast.success("Form submitted successfully!")
+        toast.success("Form submitted successfully!");
         setFormData({
           firstName: "",
           lastName: "",
@@ -164,23 +159,24 @@ const StationaryQuoteForm = () => {
             timeline: "",
             additionalDetails: "",
           },
-        })
+        });
       } else {
-        throw new Error(responseData.message || "Unknown error occurred.")
+        throw new Error(responseData.message || "Unknown error occurred.");
       }
     } catch (error) {
-      console.error("Error submitting form:", error)
-      toast.error("Failed to submit the form. Please try again.")
+      console.error("Error submitting form:", error);
+      toast.error("Failed to submit the form. Please try again.");
     } finally {
-      setIsSubmitting(false) // End submission state
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <form onSubmit={handleFormSubmit}>
       <h1>Stationary Quotation Form</h1>
 
       {/* General Information */}
+      <h2>PART II - General Information</h2>
       <TextInput
         label="First Name:"
         name="firstName"
@@ -511,14 +507,12 @@ const StationaryQuoteForm = () => {
         rows={6}
       />
 
-      {/* Submit Button */}
-      <button type="submit" disabled={isSubmitting}>
+<button type="submit" disabled={isSubmitting}>
         {isSubmitting ? "Submitting..." : "Submit"}
       </button>
-
       <ToastContainer />
     </form>
-  )
-}
+  );
+};
 
-export default StationaryQuoteForm
+export default StationaryQuoteForm;
