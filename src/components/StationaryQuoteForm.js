@@ -3,6 +3,7 @@ import TextInput from "./TextInput";
 import RadioButton from "./RadioButton";
 import CheckboxInput from "./CheckboxInput";
 import TextArea from "./TextArea";
+import NumberInput from "./NumberInput";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
