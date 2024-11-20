@@ -8,7 +8,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const GAS_WEB_APP_URL =
-  "https://script.google.com/macros/s/AKfycbwo8XLlQkt4R_-ItXEvwUeF27-n76HuA4AO_FmifqEVe9bsAh6j41NQ8Czmt0cFd0Sn/exec";
+  "https://script.google.com/macros/s/AKfycbx6HZOHNdw5rNgCjxXbmC78I0Hn6WwTVwoZZ72grxtFG0HpvB2TLRdZXMwe-F-j8L0i/exec";
 
 const StationaryQuoteForm = () => {
   const [formData, setFormData] = useState({
@@ -85,28 +85,24 @@ const StationaryQuoteForm = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
+    setIsSubmitting(true); // Set submitting state to true
+  
     try {
-      const urlEncodedData = new URLSearchParams();
-      for (const key in formData) {
-        if (formData.hasOwnProperty(key)) {
-          urlEncodedData.append(key, JSON.stringify(formData[key]));
-        }
-      }
-
+      // Send data to GAS
       const response = await fetch(GAS_WEB_APP_URL, {
         method: "POST",
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+          "Content-Type": "application/json", // Set the header for JSON
         },
-        body: urlEncodedData.toString(),
+        body: JSON.stringify(formData), // Send the form data as a JSON string
       });
-
+  
       const responseText = await response.text();
       const responseData = JSON.parse(responseText);
-
+  
       if (response.ok && responseData.status === "success") {
         toast.success("Form submitted successfully!");
+        // Reset form state
         setFormData({
           firstName: "",
           lastName: "",

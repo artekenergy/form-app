@@ -1,9 +1,14 @@
-import React, { useState } from "react"
-import TextInput from "./TextInput"
-import CheckboxInput from "./CheckboxInput"
-import NumberInput from "./NumberInput"
-import RadioButton from "./RadioButton"
-import TextArea from "./TextArea"
+import React, { useState } from "react";
+import TextInput from "./TextInput";
+import CheckboxInput from "./CheckboxInput";
+import NumberInput from "./NumberInput";
+import RadioButton from "./RadioButton";
+import TextArea from "./TextArea";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+const GAS_WEB_APP_URL =
+  "https://script.google.com/macros/s/AKfycbwqbR1wTm479A3JyY9QXdtW9xnnYqmFRTLgjOjf5KT04_tAJrhA8hHD-Prc153BG-E7Cg/exec";
 
 const MobileQuoteForm = () => {
   const [formData, setFormData] = useState({
@@ -59,69 +64,117 @@ const MobileQuoteForm = () => {
     budget: "",
     timeline: "",
     additionalDetails: "",
-  })
+  });
 
-  const [loading, setLoading] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    const keys = name.split(".");
+    setFormData((prevData) => {
+      let data = { ...prevData };
+      let current = data;
+      for (let i = 0; i < keys.length - 1; i++) {
+        if (!current[keys[i]]) current[keys[i]] = {};
+        current = current[keys[i]];
+      }
+      current[keys[keys.length - 1]] = type === "checkbox" ? checked : value;
+      return data;
+    });
+  };
 
-    const proxyUrlMobile =
-      "https://pure-escarpment-89857-457aa3cad0c8.herokuapp.com/"
-    const googleScriptUrlMobile =
-      "https://script.google.com/macros/s/AKfycbzbIXbydKLevpPvmEpKYhYKK1RmavShBfbS8KOht1KbeVmcx45uTIwV2n_fWVI5xpkNDg/exec"
-    const proxiedGoogleScriptUrlMobile = proxyUrlMobile + googleScriptUrlMobile
-
-    const dataToSend = {
-      ...formData,
-      formType: "mobileQuote", // Add a form identifier
-    }
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
 
     try {
-      console.log("Submitting form data:", dataToSend)
+      const urlEncodedData = new URLSearchParams();
+      for (const key in formData) {
+        if (formData.hasOwnProperty(key)) {
+          urlEncodedData.append(key, JSON.stringify(formData[key]));
+        }
+      }
 
-      const response = await fetch(proxiedGoogleScriptUrlMobile, {
-        redirect: "follow",
+      const response = await fetch(GAS_WEB_APP_URL, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
         },
-        body: JSON.stringify(dataToSend),
-      })
+        body: urlEncodedData.toString(),
+      });
 
-      if (response.ok) {
-        alert("Form submitted successfully!")
+      const responseText = await response.text();
+      const responseData = JSON.parse(responseText);
+
+      if (response.ok && responseData.status === "success") {
+        toast.success("Form submitted successfully!");
+        setFormData({
+          firstName: "",
+          lastName: "",
+          company: "",
+          email: "",
+          phone: "",
+          addressLine1: "",
+          addressLine2: "",
+          city: "",
+          state: "",
+          postalCode: "",
+          country: "",
+          services: {
+            diyInstallation: false,
+            professionalInstallation: false,
+          },
+          platform: "",
+          application: {
+            applicationType: "",
+            commercialApplication: "",
+            recreationalApplication: "",
+            otherApplication: "",
+          },
+          vehicleDetails: {
+            yearMakeModel: "",
+            engineType: "",
+            offGridDays: "",
+            highDrawAppliances: {
+              airConditioner: false,
+              airConditionerSpecs: "",
+              inductionCookstove: false,
+              microwave: false,
+              hairDryer: false,
+              blender: false,
+              otherAppliances: false,
+              other: "",
+            },
+          },
+          highDrawAppsSimultaneously: "",
+          hasGenerator: "",
+          generatorMakeModel: "",
+          hasAutoTransferSwitch: "",
+          solarAmount: "",
+          solarType: "",
+          shorePower: "",
+          has240VLoads: "",
+          preferredSystemVoltage: "",
+          specifiedVoltage: "",
+          preferredSystemVoltageExplanation: "",
+          batteryBankCapacity: "",
+          budget: "",
+          timeline: "",
+          additionalDetails: "",
+        });
       } else {
-        alert("Error submitting the form.")
+        throw new Error(responseData.message || "Unknown error occurred.");
       }
     } catch (error) {
-      console.error("Error submitting form: ", error)
-      alert("Error submitting the form.")
+      console.error("Error submitting form:", error);
+      toast.error("Failed to submit the form. Please try again.");
     } finally {
-      setLoading(false) // Stop loading
+      setIsSubmitting(false);
     }
-  }
-
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target
-    const keys = name.split(".")
-    setFormData((prevFormData) => {
-      let data = { ...prevFormData }
-      let current = data
-      for (let i = 0; i < keys.length - 1; i++) {
-        if (!current[keys[i]]) {
-          current[keys[i]] = {}
-        }
-        current = current[keys[i]]
-      }
-      current[keys[keys.length - 1]] = type === "checkbox" ? checked : value
-      return data
-    })
-  }
+  };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleFormSubmit}>
       <h1>Mobile Quotation Form</h1>
       <h2>PART I - General</h2>
 
@@ -521,11 +574,12 @@ const MobileQuoteForm = () => {
         rows={6} // You can adjust the number of rows for the textarea
       />
 
-      <button type="submit" disabled={loading}>
-        {loading ? "Submitting..." : "Submit"}
+<button type="submit" disabled={isSubmitting}>
+        {isSubmitting ? "Submitting..." : "Submit"}
       </button>
+      <ToastContainer />
     </form>
-  )
-}
+  );
+};
 
-export default MobileQuoteForm
+export default MobileQuoteForm;
