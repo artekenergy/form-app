@@ -182,77 +182,77 @@ const MobileQuoteForm = () => {
         label="First Name:"
         name="firstName"
         value={formData.firstName}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <TextInput
         label="Last Name:"
         name="lastName"
         value={formData.lastName}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <TextInput
         label="Company:"
         name="company"
         value={formData.company}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <TextInput
         label="Email:"
         name="email"
         value={formData.email}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <TextInput
         label="Phone:"
         name="phone"
         value={formData.phone}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <TextInput
         label="Shipping Street Address Line 1:"
         name="addressLine1"
         value={formData.addressLine1}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <TextInput
         label="Shipping Street Address Line 2:"
         name="addressLine2"
         value={formData.addressLine2}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <TextInput
         label="Shipping City:"
         name="city"
         value={formData.city}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <TextInput
         label="Shipping State:"
         name="state"
         value={formData.state}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <NumberInput
         label="Shipping Postal Code:"
         name="postalCode"
         value={formData.postalCode}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <TextInput
         label="Country:"
         name="country"
         value={formData.country}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <h3>I am interested in a quote for the following service(s):</h3>
@@ -261,14 +261,14 @@ const MobileQuoteForm = () => {
         label="Electrical system design & components for DIY installation"
         name="services.diyInstallation"
         checked={formData.services.diyInstallation}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <CheckboxInput
         label="Electrical system design & professional installation at Artek"
         name="services.professionalInstallation"
         checked={formData.services.professionalInstallation}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <h3>Platform</h3>
@@ -277,7 +277,7 @@ const MobileQuoteForm = () => {
         label="Platform (Ex: van, RV, semi-truck, trailer, military, marine):"
         name="platform"
         value={formData.platform}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <h3>Application</h3>
@@ -290,7 +290,7 @@ const MobileQuoteForm = () => {
           { label: "Recreational", value: "recreational" },
           { label: "Other", value: "other" },
         ]}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       {/* Conditionally show text input for each option */}
@@ -299,7 +299,7 @@ const MobileQuoteForm = () => {
           label="Please specify Commercial application:"
           name="application.commercialApplication"
           value={formData.application.commercialApplication}
-          onChange={handleChange}
+          onChange={handleInputChange}
         />
       )}
 
@@ -308,7 +308,7 @@ const MobileQuoteForm = () => {
           label="Please specify Recreational application:"
           name="application.recreationalApplication"
           value={formData.application.recreationalApplication}
-          onChange={handleChange}
+          onChange={handleInputChange}
         />
       )}
 
@@ -317,7 +317,7 @@ const MobileQuoteForm = () => {
           label="Please specify Other application:"
           name="application.otherApplication"
           value={formData.application.otherApplication}
-          onChange={handleChange}
+          onChange={handleInputChange}
         />
       )}
 
@@ -327,21 +327,21 @@ const MobileQuoteForm = () => {
         label="Vehicle year, make, model:"
         name="vehicleDetails.yearMakeModel"
         value={formData.vehicleDetails.yearMakeModel}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <TextInput
         label="Vehicle engine type:"
         name="vehicleDetails.engineType"
         value={formData.vehicleDetails.engineType}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <NumberInput
         label="How long would you prefer to be off-grid / without shore power? (days):"
         name="vehicleDetails.offGridDays"
         value={formData.vehicleDetails.offGridDays}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <h3>High-draw appliances</h3>
@@ -350,14 +350,14 @@ const MobileQuoteForm = () => {
         label="Air Conditioner"
         name="vehicleDetails.highDrawAppliances.airConditioner"
         checked={formData.vehicleDetails.highDrawAppliances.airConditioner}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
       {formData.vehicleDetails.highDrawAppliances.airConditioner && (
         <TextInput
           label="Please specify the air conditioner make and model:"
           name="vehicleDetails.highDrawAppliances.airConditionerSpecs"
           value={formData.vehicleDetails.highDrawAppliances.airConditionerSpecs}
-          onChange={handleChange}
+          onChange={handleInputChange}
         />
       )}
 
@@ -365,42 +365,42 @@ const MobileQuoteForm = () => {
         label="Induction Cookstove"
         name="vehicleDetails.highDrawAppliances.inductionCookstove"
         checked={formData.vehicleDetails.highDrawAppliances.inductionCookstove}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <CheckboxInput
         label="Microwave"
         name="vehicleDetails.highDrawAppliances.microwave"
         checked={formData.vehicleDetails.highDrawAppliances.microwave}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <CheckboxInput
         label="Hair Dryer"
         name="vehicleDetails.highDrawAppliances.hairDryer"
         checked={formData.vehicleDetails.highDrawAppliances.hairDryer}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <CheckboxInput
         label="Blender"
         name="vehicleDetails.highDrawAppliances.blender"
         checked={formData.vehicleDetails.highDrawAppliances.blender}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <CheckboxInput
         label="Other"
         name="vehicleDetails.highDrawAppliances.otherAppliances"
         checked={formData.vehicleDetails.highDrawAppliances.otherAppliances}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
       {formData.vehicleDetails.highDrawAppliances.otherAppliances && (
         <TextInput
           label="Please specify:"
           name="vehicleDetails.highDrawAppliances.other"
           value={formData.vehicleDetails.highDrawAppliances.other}
-          onChange={handleChange}
+          onChange={handleInputChange}
         />
       )}
 
@@ -412,7 +412,7 @@ const MobileQuoteForm = () => {
           { label: "Yes", value: "yes" },
           { label: "No", value: "no" },
         ]}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <RadioButton
@@ -423,7 +423,7 @@ const MobileQuoteForm = () => {
           { label: "Yes", value: "yes" },
           { label: "No", value: "no" },
         ]}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       {/* Conditionally render generator make/model and transfer switch fields if "Yes" is selected */}
@@ -433,7 +433,7 @@ const MobileQuoteForm = () => {
             label="Please specify the generator make and model:"
             name="generatorMakeModel"
             value={formData.generatorMakeModel}
-            onChange={handleChange}
+            onChange={handleInputChange}
           />
 
           <RadioButton
@@ -444,7 +444,7 @@ const MobileQuoteForm = () => {
               { label: "No", value: "no" },
               { label: "Yes", value: "yes" },
             ]}
-            onChange={handleChange}
+            onChange={handleInputChange}
           />
         </>
       )}
@@ -456,7 +456,7 @@ const MobileQuoteForm = () => {
         label="How much solar would you ideally like to include? (Watts)"
         name="solarAmount"
         value={formData.solarAmount}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       {/* Solar Type: Roof mount, Deployable, or Both */}
@@ -469,7 +469,7 @@ const MobileQuoteForm = () => {
           { label: "Deployable", value: "deployable" },
           { label: "Both", value: "both" },
         ]}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <h3>Shore Power Preferences</h3>
@@ -484,7 +484,7 @@ const MobileQuoteForm = () => {
           { label: "30A", value: "30A" },
           { label: "50A", value: "50A" },
         ]}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       {/* 240V Loads Question */}
@@ -496,7 +496,7 @@ const MobileQuoteForm = () => {
           { label: "No", value: "no" },
           { label: "Yes", value: "yes" },
         ]}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <h3>System Voltage</h3>
@@ -510,7 +510,7 @@ const MobileQuoteForm = () => {
           { label: "No", value: "no" },
           { label: "Yes", value: "yes" },
         ]}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       {/* Show Voltage Specification and Explanation if "Yes" is selected */}
@@ -526,7 +526,7 @@ const MobileQuoteForm = () => {
               { label: "24V", value: "24V" },
               { label: "48V", value: "48V" },
             ]}
-            onChange={handleChange}
+            onChange={handleInputChange}
           />
 
           {/* Text input for explanation */}
@@ -534,7 +534,7 @@ const MobileQuoteForm = () => {
             label="Please explain why you prefer this voltage:"
             name="preferredSystemVoltageExplanation"
             value={formData.preferredSystemVoltageExplanation}
-            onChange={handleChange}
+            onChange={handleInputChange}
           />
         </>
       )}
@@ -546,7 +546,7 @@ const MobileQuoteForm = () => {
         label="Do you have a preferred battery bank capacity (in Kw or Ah)?"
         name="batteryBankCapacity"
         value={formData.batteryBankCapacity}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       {/* Budget */}
@@ -554,7 +554,7 @@ const MobileQuoteForm = () => {
         label="What is your budget?"
         name="budget"
         value={formData.budget}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       {/* Timeline */}
@@ -562,7 +562,7 @@ const MobileQuoteForm = () => {
         label="What is your timeline?"
         name="timeline"
         value={formData.timeline}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       {/* Additional Details */}
@@ -570,7 +570,7 @@ const MobileQuoteForm = () => {
         label="Any other details you would like us to know?"
         name="additionalDetails"
         value={formData.additionalDetails}
-        onChange={handleChange}
+        onChange={handleInputChange}
         rows={6} // You can adjust the number of rows for the textarea
       />
 
