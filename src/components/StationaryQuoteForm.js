@@ -1,11 +1,15 @@
 // StationaryQuoteForm.jsx
-
 import React, { useState } from "react"
 import TextInput from "./TextInput"
 import CheckboxInput from "./CheckboxInput"
 import NumberInput from "./NumberInput"
 import RadioButton from "./RadioButton"
 import TextArea from "./TextArea"
+import { ToastContainer, toast } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
+
+const GAS_WEB_APP_URL =
+  "https://script.google.com/macros/s/AKfycbyVYcJ6iOSnHngc6fzr4-tDJmYLMgVs6vYtAuHvnMBRZ26IOOovoXKtWm5z_1F2v31S/exec"
 
 const StationaryQuoteForm = () => {
   const [formData, setFormData] = useState({
@@ -63,47 +67,50 @@ const StationaryQuoteForm = () => {
     },
   })
 
-  const [loading, setLoading] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false) // Manage submission state
 
-  /**
-   * Handles form submission by sending data to the GAS endpoint.
-   * @param {Event} e - The form submission event.
-   */
-  const handleSubmit = async (e) => {
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target
+    const keys = name.split(".")
+    setFormData((prevFormData) => {
+      let data = { ...prevFormData }
+      let current = data
+      for (let i = 0; i < keys.length - 1; i++) {
+        if (!current[keys[i]]) {
+          current[keys[i]] = {}
+        }
+        current = current[keys[i]]
+      }
+      current[keys[keys.length - 1]] = type === "checkbox" ? checked : value
+      return data
+    })
+  }
+
+  const handleFormSubmit = async (e) => {
     e.preventDefault()
-    setLoading(true) // Start loading
-
-    // Replace with your actual Web App URL from GAS deployment
-    const googleScriptUrlStationary =
-      "https://script.google.com/macros/s/AKfycbzT0BTSGak22Qi3OA4ZaqfhAP9IAjrbw4KzkwFSe7JtMZD6242t494UuEv-U3QRBEMT/exec"
-    
-    // If a proxy is required, ensure it's correctly configured
-    // const proxyUrlStationary = "https://pure-escarpment-89857-457aa3cad0c8.herokuapp.com/"
-    // const proxiedGoogleScriptUrlStationary = proxyUrlStationary + googleScriptUrlStationary
-
-    const dataToSend = {
-      ...formData,
-      formType: "stationaryQuote", // Add a form identifier if needed
-    }
-
+    setIsSubmitting(true) // Start submission state
     try {
-      console.log("Submitting form data:", JSON.stringify(dataToSend, null, 2))
+      const urlEncodedData = new URLSearchParams()
+      urlEncodedData.append("action", "submitAndUpload")
+      for (const key in formData) {
+        if (formData.hasOwnProperty(key)) {
+          urlEncodedData.append(key, JSON.stringify(formData[key]))
+        }
+      }
 
-      const response = await fetch(googleScriptUrlStationary, { // Use `proxiedGoogleScriptUrlStationary` if using proxy
-        // redirect: "follow", // Optional: Remove if not using proxy
+      const response = await fetch(GAS_WEB_APP_URL, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
         },
-        body: JSON.stringify(dataToSend),
+        body: urlEncodedData.toString(),
       })
 
-      const result = await response.json()
-      console.log("Response from GAS:", result)
+      const responseText = await response.text()
+      const responseData = JSON.parse(responseText)
 
-      if (response.ok && result.status === "success") {
-        alert("Form submitted successfully!")
-        // Optionally, reset the form
+      if (response.ok && responseData.status === "success") {
+        toast.success("Form submitted successfully!")
         setFormData({
           firstName: "",
           lastName: "",
@@ -159,120 +166,84 @@ const StationaryQuoteForm = () => {
           },
         })
       } else {
-        // Handle errors returned by GAS
-        const errorMessage = result.message || "Error submitting the form."
-        alert(`Error: ${errorMessage}`)
+        throw new Error(responseData.message || "Unknown error occurred.")
       }
     } catch (error) {
-      console.error("Error submitting form: ", error)
-      alert("An unexpected error occurred while submitting the form.")
+      console.error("Error submitting form:", error)
+      toast.error("Failed to submit the form. Please try again.")
     } finally {
-      setLoading(false) // Stop loading
+      setIsSubmitting(false) // End submission state
     }
   }
 
-  /**
-   * Handles changes to form inputs, updating the formData state accordingly.
-   * @param {Event} e - The input change event.
-   */
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target
-    const keys = name.split(".")
-    setFormData((prevFormData) => {
-      let data = { ...prevFormData }
-      let current = data
-      for (let i = 0; i < keys.length - 1; i++) {
-        if (!current[keys[i]]) {
-          current[keys[i]] = {}
-        }
-        current = current[keys[i]]
-      }
-      current[keys[keys.length - 1]] = type === "checkbox" ? checked : value
-      return data
-    })
-  }
-
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleFormSubmit}>
       <h1>Stationary Quotation Form</h1>
-      <h2>PART I - General</h2>
 
+      {/* General Information */}
       <TextInput
         label="First Name:"
         name="firstName"
         value={formData.firstName}
-        onChange={handleChange}
+        onChange={handleInputChange}
         required
       />
       <TextInput
         label="Last Name:"
         name="lastName"
         value={formData.lastName}
-        onChange={handleChange}
+        onChange={handleInputChange}
         required
       />
       <TextInput
         label="Company:"
         name="company"
         value={formData.company}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
       <TextInput
         label="Email:"
         name="email"
-        value={formData.email}
-        onChange={handleChange}
-        required
         type="email"
+        value={formData.email}
+        onChange={handleInputChange}
+        required
       />
       <TextInput
         label="Phone:"
         name="phone"
         value={formData.phone}
-        onChange={handleChange}
-        required
-        type="tel"
+        onChange={handleInputChange}
       />
       <TextInput
-        label="Shipping Street Address Line 1:"
+        label="Shipping Address Line 1:"
         name="addressLine1"
         value={formData.addressLine1}
-        onChange={handleChange}
-        required
+        onChange={handleInputChange}
       />
       <TextInput
-        label="Shipping Street Address Line 2:"
-        name="addressLine2"
-        value={formData.addressLine2}
-        onChange={handleChange}
-      />
-      <TextInput
-        label="Shipping City:"
+        label="City:"
         name="city"
         value={formData.city}
-        onChange={handleChange}
-        required
+        onChange={handleInputChange}
       />
       <TextInput
-        label="Shipping State (Suffix):"
+        label="State:"
         name="state"
         value={formData.state}
-        onChange={handleChange}
-        required
+        onChange={handleInputChange}
       />
       <NumberInput
-        label="Shipping Postal Code:"
+        label="Postal Code:"
         name="postalCode"
         value={formData.postalCode}
-        onChange={handleChange}
-        required
+        onChange={handleInputChange}
       />
       <TextInput
         label="Country:"
         name="country"
         value={formData.country}
-        onChange={handleChange}
-        required
+        onChange={handleInputChange}
       />
 
       <h3>I am interested in a quote for the following service(s):</h3>
@@ -540,9 +511,12 @@ const StationaryQuoteForm = () => {
         rows={6}
       />
 
-      <button type="submit" disabled={loading}>
-        {loading ? "Submitting..." : "Submit"}
+      {/* Submit Button */}
+      <button type="submit" disabled={isSubmitting}>
+        {isSubmitting ? "Submitting..." : "Submit"}
       </button>
+
+      <ToastContainer />
     </form>
   )
 }
