@@ -9,7 +9,7 @@ import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 
 const GAS_WEB_APP_URL =
-  "https://script.google.com/macros/s/AKfycbyQZONIehWcYyECkC16XVejuh1Joie3tM_fuhEZ15YS-97cwdJPP36CeitCQftPubIH/exec" // Replace with your deployment URL
+  "https://script.google.com/macros/s/AKfycby3vBab-l2nsk1d3ghKX2rOH8rSquJY-5c4jLxSFbbs4J3A369J8gQ9tAxb8ACxOlD0/exec"
 
 const RmaForm = () => {
   const [formData, setFormData] = useState({
@@ -29,7 +29,6 @@ const RmaForm = () => {
   })
 
   const [selectedFile, setSelectedFile] = useState(null)
-  const [loadingUpload, setLoadingUpload] = useState(false)
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -46,19 +45,35 @@ const RmaForm = () => {
   const handleFormSubmit = async (e) => {
     e.preventDefault()
     try {
-      // Prepare URL-encoded form data
+      if (!selectedFile) {
+        toast.error("Please upload a file before submitting.")
+        return
+      }
+
+      // Read the file as Base64
+      const fileBase64 = await new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.readAsDataURL(selectedFile)
+        reader.onload = () => {
+          const base64String = reader.result.split(",")[1] // Remove the Data URL prefix
+          resolve(base64String)
+        }
+        reader.onerror = (error) => reject(error)
+      })
+
+      // Prepare form data
       const urlEncodedData = new URLSearchParams()
-      urlEncodedData.append("action", "submitForm") // Add action parameter
+      urlEncodedData.append("action", "submitAndUpload")
       for (const key in formData) {
         if (formData.hasOwnProperty(key)) {
           urlEncodedData.append(key, formData[key])
         }
       }
+      urlEncodedData.append("fileName", selectedFile.name)
+      urlEncodedData.append("fileType", selectedFile.type)
+      urlEncodedData.append("fileData", fileBase64)
 
-      // Debugging: Log the serialized payload
-      console.log("Submitting Form Data:", urlEncodedData.toString())
-
-      // Send form data to the GAS endpoint
+      // Send data to GAS
       const response = await fetch(GAS_WEB_APP_URL, {
         method: "POST",
         headers: {
@@ -67,14 +82,12 @@ const RmaForm = () => {
         body: urlEncodedData.toString(),
       })
 
-      // Parse and handle response
       const responseText = await response.text()
-      console.log("GAS Response:", responseText)
       const responseData = JSON.parse(responseText)
 
       if (response.ok && responseData.status === "success") {
         toast.success("Form submitted successfully!")
-        // Reset form
+        // Reset form and file state
         setFormData({
           firstName: "",
           lastName: "",
@@ -90,6 +103,7 @@ const RmaForm = () => {
           failureDescription: "",
           acknowledgeShippingCosts: false,
         })
+        setSelectedFile(null)
       } else {
         throw new Error(responseData.message || "Unknown error occurred.")
       }
@@ -99,64 +113,8 @@ const RmaForm = () => {
     }
   }
 
-  const handleUploadFile = async (e) => {
-    e.preventDefault()
-    setLoadingUpload(true)
-
-    if (!selectedFile) {
-      toast.error("Please select a file to upload.")
-      setLoadingUpload(false)
-      return
-    }
-
-    try {
-      // Read the file as Base64
-      const fileBase64 = await new Promise((resolve, reject) => {
-        const reader = new FileReader()
-        reader.readAsDataURL(selectedFile)
-        reader.onload = () => {
-          const base64String = reader.result.split(",")[1] // Remove the Data URL prefix
-          resolve(base64String)
-        }
-        reader.onerror = (error) => reject(error)
-      })
-
-      // Prepare URL-encoded data for the file upload
-      const urlEncodedData = new URLSearchParams()
-      urlEncodedData.append("action", "uploadFile")
-      urlEncodedData.append("fileName", selectedFile.name)
-      urlEncodedData.append("fileType", selectedFile.type)
-      urlEncodedData.append("fileData", fileBase64)
-
-      // Send file data to the Google Apps Script endpoint
-      const response = await fetch(GAS_WEB_APP_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "text/plain;charset=utf-8",
-        },
-        body: urlEncodedData.toString(),
-      })
-
-      const responseText = await response.text()
-      const responseData = JSON.parse(responseText)
-
-      if (responseData.status === "success") {
-        toast.success("File uploaded successfully!")
-        setSelectedFile(null)
-      } else {
-        throw new Error(responseData.message || "Unknown error.")
-      }
-    } catch (error) {
-      console.error("Error uploading file:", error)
-      toast.error("Failed to upload the file. Please try again.")
-    } finally {
-      setLoadingUpload(false)
-    }
-  }
-
   return (
     <>
-      {/* RMA Form Submission */}
       <form onSubmit={handleFormSubmit}>
         <h1>RMA Form</h1>
         <TextInput
@@ -250,12 +208,9 @@ const RmaForm = () => {
           checked={formData.acknowledgeShippingCosts}
           onChange={handleInputChange}
         />
-        <button type="submit">Submit</button>
-      </form>
 
-      {/* File Upload */}
-      <form onSubmit={handleUploadFile}>
-        <h2>PART III - Pre-RMA Bench Test Instructions </h2>
+        <h2>Pre-RMA Bench Test Instructions</h2>
+
         <p>
           To file an RMA for any of the following product categories, you will
           need to complete the associated form. Once the form is completed
@@ -358,9 +313,8 @@ const RmaForm = () => {
           onFileChange={handleFileChange}
           selectedFile={selectedFile}
         />
-        <button type="submit" disabled={loadingUpload}>
-          {loadingUpload ? "Uploading..." : "Upload Document"}
-        </button>
+
+        <button type="submit">Submit</button>
       </form>
 
       <ToastContainer />
