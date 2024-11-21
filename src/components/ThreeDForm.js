@@ -1,10 +1,12 @@
-// ShippingForm.js
 import React, { useState } from "react";
 import TextInput from "./TextInput";
 import CheckboxInput from "./CheckboxInput";
 import TextArea from "./TextArea";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
+const GAS_WEB_APP_URL =
+  "https://script.google.com/macros/s/AKfycbwKAYhp8UBIXe91xWu7_yZfsvdei6xMt60bvh2EAU9_tPfAcIOr7NNW70AumooAZEVtSg/exec";
 
 const ThreeDForm = () => {
   const [formData, setFormData] = useState({
@@ -24,7 +26,7 @@ const ThreeDForm = () => {
     acknowledgeClaims: false,
   });
 
-  const [loadingForm, setLoadingForm] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -36,61 +38,53 @@ const ThreeDForm = () => {
 
   const handleSubmitForm = async (e) => {
     e.preventDefault();
-    setLoadingForm(true);
-
-    // Frontend validation
-    if (!formData.firstName || !formData.lastName || !formData.email) {
-      toast.error("Please fill in all required fields.");
-      setLoadingForm(false);
-      return;
-    }
+    setIsSubmitting(true);
 
     try {
-      const formDataPayload = new FormData();
+      // Convert form data to URL-encoded format
+      const urlEncodedData = new URLSearchParams();
       Object.keys(formData).forEach((key) => {
-        formDataPayload.append(key, formData[key]);
+        urlEncodedData.append(key, formData[key]);
       });
-      formDataPayload.append("action", "submitForm");
+      urlEncodedData.append("action", "submitForm");
 
-      const googleScriptUrl =
-        "https://script.google.com/macros/s/AKfycbxWCCU4K1NgRovMAR88zHzqBnb-3Pkueep_Cw2YH-na4E9Bd4LH38b5Oozy08wYJB5HAQ/exec"; // Replace with actual URL
-
-      const response = await fetch(googleScriptUrl, {
+      const response = await fetch(GAS_WEB_APP_URL, {
         method: "POST",
-        body: formDataPayload,
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+        },
+        body: urlEncodedData.toString(),
       });
 
-      if (response.ok) {
-        const responseData = await response.json();
-        if (responseData.status === "success") {
-          toast.success("Form submitted successfully!");
-          setFormData({
-            firstName: "",
-            lastName: "",
-            company: "",
-            streetAddress1: "",
-            streetAddress2: "",
-            city: "",
-            stateSuffix: "",
-            zipCode: "",
-            email: "",
-            phone: "",
-            productDimensions: "",
-            acknowledgeShippingCosts: false,
-            scheduleFreightPickup: false,
-            acknowledgeClaims: false,
-          });
-        } else {
-          toast.error("Form submission failed: " + responseData.message);
-        }
+      const responseData = await response.json();
+
+      if (response.ok && responseData.status === "success") {
+        toast.success("Form submitted successfully!");
+        // Reset form data
+        setFormData({
+          firstName: "",
+          lastName: "",
+          company: "",
+          streetAddress1: "",
+          streetAddress2: "",
+          city: "",
+          stateSuffix: "",
+          zipCode: "",
+          email: "",
+          phone: "",
+          productDimensions: "",
+          acknowledgeShippingCosts: false,
+          scheduleFreightPickup: false,
+          acknowledgeClaims: false,
+        });
       } else {
-        toast.error("Error submitting the form.");
+        throw new Error(responseData.message || "Unknown error occurred.");
       }
     } catch (error) {
       console.error("Error submitting form:", error);
       toast.error("An error occurred while submitting the form.");
     } finally {
-      setLoadingForm(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -224,11 +218,10 @@ const ThreeDForm = () => {
         />
         <br />
 
-        <button type="submit" disabled={loadingForm}>
-          {loadingForm ? "Submitting..." : "Submit Shipping Form"}
+        <button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Submitting..." : "Submit Shipping Form"}
         </button>
       </form>
-
       <ToastContainer />
     </>
   );
