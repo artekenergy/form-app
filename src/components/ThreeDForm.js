@@ -46,7 +46,9 @@ const ThreeDForm = () => {
       Object.keys(formData).forEach((key) => {
         urlEncodedData.append(key, formData[key]);
       });
-      urlEncodedData.append("action", "submitForm");
+
+      // Change action value to match GAS
+      urlEncodedData.append("action", "submit3DForm");
 
       const response = await fetch(GAS_WEB_APP_URL, {
         method: "POST",
