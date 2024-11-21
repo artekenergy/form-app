@@ -8,7 +8,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const GAS_WEB_APP_URL =
-  "https://script.google.com/macros/s/AKfycbxXw409mheHGvQkTwcNOWmFVDyhAvkeDEfF_4p5Hn8xRb_MgwdkgjIMwv2GCqnLvL5_EA/exec";
+  "https://script.google.com/macros/s/AKfycbwAo9pDma7LW-QVH5LOEH-YJSOcks0K1CelVyS8uO4zIH5u7C-N4F6Olbq7iAwWXgx9lA/exec";
 
 const MobileQuoteForm = () => {
   const [formData, setFormData] = useState({
@@ -91,7 +91,11 @@ const MobileQuoteForm = () => {
       const urlEncodedData = new URLSearchParams();
       for (const key in formData) {
         if (formData.hasOwnProperty(key)) {
-          urlEncodedData.append(key, JSON.stringify(formData[key]));
+          if (typeof formData[key] === "object") {
+            urlEncodedData.append(key, JSON.stringify(formData[key]));
+          } else {
+            urlEncodedData.append(key, formData[key]);
+          }
         }
       }
 

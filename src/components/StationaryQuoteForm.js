@@ -8,7 +8,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const GAS_WEB_APP_URL =
-  "https://script.google.com/macros/s/AKfycbxWEblncUPHrMymudCHqbWoXcqfZaR7VfRgaruBfU3pk9BVqxVxW0osDiFvE2-a67KQ/exec";
+  "https://script.google.com/macros/s/AKfycbyjmb3YgAtmllq2FLocxgbj4krHzF0wKJHfzN7hGkcKVFp8-G2JVG-VQ-SQXqfASbe6/exec";
 
 const StationaryQuoteForm = () => {
   const [formData, setFormData] = useState({
@@ -85,101 +85,101 @@ const StationaryQuoteForm = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true); // Set submitting state to true
+    setIsSubmitting(true);
 
     try {
-        // Prepare form data as URL-encoded
-        const urlEncodedData = new URLSearchParams();
-        for (const key in formData) {
-            if (formData.hasOwnProperty(key)) {
-                if (typeof formData[key] === "object") {
-                    // Convert objects (like nested form data) to JSON strings
-                    urlEncodedData.append(key, JSON.stringify(formData[key]));
-                } else {
-                    urlEncodedData.append(key, formData[key]);
-                }
-            }
-        }
+      const urlEncodedData = new URLSearchParams();
 
-        // Send data to GAS
-        const response = await fetch(GAS_WEB_APP_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8", // Use URL-encoded format
+      // Flatten and encode form data
+      for (const key in formData) {
+        if (formData.hasOwnProperty(key)) {
+          if (typeof formData[key] === "object") {
+            urlEncodedData.append(key, JSON.stringify(formData[key]));
+          } else {
+            urlEncodedData.append(key, formData[key]);
+          }
+        }
+      }
+
+      // Send the POST request
+      const response = await fetch(GAS_WEB_APP_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+        },
+        body: urlEncodedData.toString(),
+      });
+
+      const responseText = await response.text();
+      const responseData = JSON.parse(responseText);
+
+      if (response.ok && responseData.status === "success") {
+        toast.success("Form submitted successfully!");
+        // Reset form state
+        setFormData({
+          firstName: "",
+          lastName: "",
+          company: "",
+          email: "",
+          phone: "",
+          addressLine1: "",
+          addressLine2: "",
+          city: "",
+          state: "",
+          postalCode: "",
+          country: "",
+          services: {
+            diyInstallation: false,
+            preWiredBoard: false,
+          },
+          platform: "",
+          application: {
+            type: "",
+            commercialDetails: "",
+            recreationalDetails: "",
+            otherDetails: "",
+          },
+          system: {
+            systemType: "",
+            requiresPermitting: "",
+            systemVoltage: "",
+            inverterCapacity: "",
+            highDrawAppliances: {
+              airConditioner: false,
+              airConditionerSpecs: "",
+              inductionCookstove: false,
+              microwave: false,
+              hairDryer: false,
+              blender: false,
+              otherAppliances: false,
+              other: "",
             },
-            body: urlEncodedData.toString(), // Convert form data to URL-encoded string
+            highDrawAppliancesSimultaneous: "",
+            generator: {
+              hasGenerator: "",
+              makeModel: "",
+              hasTransferSwitch: "",
+            },
+            solarAmount: "",
+            solarMount: "",
+            preferredVoltage: "",
+            preferredVoltageExplanation: "",
+            batteryBankCapacity: "",
+            budget: "",
+            timeline: "",
+            additionalDetails: "",
+          },
         });
-
-        const responseText = await response.text();
-        const responseData = JSON.parse(responseText);
-
-        if (response.ok && responseData.status === "success") {
-            toast.success("Form submitted successfully!");
-            // Reset form state
-            setFormData({
-                firstName: "",
-                lastName: "",
-                company: "",
-                email: "",
-                phone: "",
-                addressLine1: "",
-                addressLine2: "",
-                city: "",
-                state: "",
-                postalCode: "",
-                country: "",
-                services: {
-                    diyInstallation: false,
-                    preWiredBoard: false,
-                },
-                platform: "",
-                application: {
-                    type: "",
-                    commercialDetails: "",
-                    recreationalDetails: "",
-                    otherDetails: "",
-                },
-                system: {
-                    systemType: "",
-                    requiresPermitting: "",
-                    systemVoltage: "",
-                    inverterCapacity: "",
-                    highDrawAppliances: {
-                        airConditioner: false,
-                        airConditionerSpecs: "",
-                        inductionCookstove: false,
-                        microwave: false,
-                        hairDryer: false,
-                        blender: false,
-                        otherAppliances: false,
-                        other: "",
-                    },
-                    highDrawAppliancesSimultaneous: "",
-                    generator: {
-                        hasGenerator: "",
-                        makeModel: "",
-                        hasTransferSwitch: "",
-                    },
-                    solarAmount: "",
-                    solarMount: "",
-                    preferredVoltage: "",
-                    preferredVoltageExplanation: "",
-                    batteryBankCapacity: "",
-                    budget: "",
-                    timeline: "",
-                    additionalDetails: "",
-                },
-            });
-        } else {
-            throw new Error(responseData.message || "Unknown error occurred.");
-        }
+      } else {
+        throw new Error(responseData.message || "Unknown error occurred.");
+      }
     } catch (error) {
-        console.error("Error submitting form:", error);
-        toast.error("Failed to submit the form. Please try again.");
+      console.error("Error submitting form:", error);
+      toast.error("Failed to submit the form. Please try again.");
     } finally {
-        setIsSubmitting(false); // Reset submitting state
+      setIsSubmitting(false);
     }
-};
+  };
 
 
   return (
