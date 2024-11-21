@@ -44,38 +44,38 @@ const RmaForm = () => {
   }
 
   const handleFormSubmit = async (e) => {
-    e.preventDefault()
-    setIsSubmitting(true) // Set submitting state to true
+    e.preventDefault();
+    setIsSubmitting(true); // Set submitting state to true
     try {
       if (!selectedFile) {
-        toast.error("Please upload a file before submitting.")
-        setIsSubmitting(false) // Reset submitting state
-        return
+        toast.error("Please upload a file before submitting.");
+        setIsSubmitting(false); // Reset submitting state
+        return;
       }
-
+  
       // Read the file as Base64
       const fileBase64 = await new Promise((resolve, reject) => {
-        const reader = new FileReader()
-        reader.readAsDataURL(selectedFile)
+        const reader = new FileReader();
+        reader.readAsDataURL(selectedFile);
         reader.onload = () => {
-          const base64String = reader.result.split(",")[1] // Remove the Data URL prefix
-          resolve(base64String)
-        }
-        reader.onerror = (error) => reject(error)
-      })
-
+          const base64String = reader.result.split(",")[1]; // Remove the Data URL prefix
+          resolve(base64String);
+        };
+        reader.onerror = (error) => reject(error);
+      });
+  
       // Prepare form data
-      const urlEncodedData = new URLSearchParams()
-      urlEncodedData.append("action", "submitAndUpload")
+      const urlEncodedData = new URLSearchParams();
+      urlEncodedData.append("action", "submitAndUpload"); // Ensure action matches backend
       for (const key in formData) {
         if (formData.hasOwnProperty(key)) {
-          urlEncodedData.append(key, formData[key])
+          urlEncodedData.append(key, formData[key]); // Append each form field
         }
       }
-      urlEncodedData.append("fileName", selectedFile.name)
-      urlEncodedData.append("fileType", selectedFile.type)
-      urlEncodedData.append("fileData", fileBase64)
-
+      urlEncodedData.append("fileName", selectedFile.name); // Include file name
+      urlEncodedData.append("fileType", selectedFile.type); // Include file type
+      urlEncodedData.append("fileData", fileBase64); // Include Base64 encoded file data
+  
       // Send data to GAS
       const response = await fetch(GAS_WEB_APP_URL, {
         method: "POST",
@@ -83,13 +83,13 @@ const RmaForm = () => {
           "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
         },
         body: urlEncodedData.toString(),
-      })
-
-      const responseText = await response.text()
-      const responseData = JSON.parse(responseText)
-
+      });
+  
+      const responseText = await response.text();
+      const responseData = JSON.parse(responseText);
+  
       if (response.ok && responseData.status === "success") {
-        toast.success("Form submitted successfully!")
+        toast.success("Form submitted successfully!");
         // Reset form and file state
         setFormData({
           firstName: "",
@@ -105,18 +105,18 @@ const RmaForm = () => {
           firmwareVersion: "",
           failureDescription: "",
           acknowledgeShippingCosts: false,
-        })
-        setSelectedFile(null)
+        });
+        setSelectedFile(null);
       } else {
-        throw new Error(responseData.message || "Unknown error occurred.")
+        throw new Error(responseData.message || "Unknown error occurred.");
       }
     } catch (error) {
-      console.error("Error submitting form:", error)
-      toast.error("Failed to submit the form. Please try again.")
+      console.error("Error submitting form:", error);
+      toast.error("Failed to submit the form. Please try again.");
     } finally {
-      setIsSubmitting(false) // Reset submitting state
+      setIsSubmitting(false); // Reset submitting state
     }
-  }
+  };
 
   return (
     <>

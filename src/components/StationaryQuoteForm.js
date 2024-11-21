@@ -86,10 +86,13 @@ const StationaryQuoteForm = () => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-
+  
     try {
       const urlEncodedData = new URLSearchParams();
-
+  
+      // Add the required "action" parameter
+      urlEncodedData.append("action", "submitStationaryQuote");
+  
       // Flatten and encode form data
       for (const key in formData) {
         if (formData.hasOwnProperty(key)) {
@@ -100,7 +103,7 @@ const StationaryQuoteForm = () => {
           }
         }
       }
-
+  
       // Send the POST request
       const response = await fetch(GAS_WEB_APP_URL, {
         method: "POST",
@@ -109,10 +112,10 @@ const StationaryQuoteForm = () => {
         },
         body: urlEncodedData.toString(),
       });
-
+  
       const responseText = await response.text();
       const responseData = JSON.parse(responseText);
-
+  
       if (response.ok && responseData.status === "success") {
         toast.success("Form submitted successfully!");
         // Reset form state

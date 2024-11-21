@@ -86,9 +86,14 @@ const MobileQuoteForm = () => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-
+  
     try {
       const urlEncodedData = new URLSearchParams();
+  
+      // Add the required "action" parameter
+      urlEncodedData.append("action", "submitQuote");
+  
+      // Flatten and encode form data
       for (const key in formData) {
         if (formData.hasOwnProperty(key)) {
           if (typeof formData[key] === "object") {
@@ -98,7 +103,8 @@ const MobileQuoteForm = () => {
           }
         }
       }
-
+  
+      // Send the POST request
       const response = await fetch(GAS_WEB_APP_URL, {
         method: "POST",
         headers: {
@@ -106,10 +112,10 @@ const MobileQuoteForm = () => {
         },
         body: urlEncodedData.toString(),
       });
-
+  
       const responseText = await response.text();
       const responseData = JSON.parse(responseText);
-
+  
       if (response.ok && responseData.status === "success") {
         toast.success("Form submitted successfully!");
         setFormData({
@@ -176,6 +182,7 @@ const MobileQuoteForm = () => {
       setIsSubmitting(false);
     }
   };
+  
 
   return (
     <form onSubmit={handleFormSubmit}>
