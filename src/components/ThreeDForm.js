@@ -6,7 +6,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const GAS_WEB_APP_URL =
-  "https://script.google.com/macros/s/AKfycbwKAYhp8UBIXe91xWu7_yZfsvdei6xMt60bvh2EAU9_tPfAcIOr7NNW70AumooAZEVtSg/exec";
+  "https://script.google.com/macros/s/AKfycbw9DZruNkadE0Wf12UVMkUT4V7MOpwIHI3wLaXJVz2dGaIdheuj3ppm0KyhDbbsjyFicQ/exec";
 
 const ThreeDForm = () => {
   const [formData, setFormData] = useState({
