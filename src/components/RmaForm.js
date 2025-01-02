@@ -122,6 +122,24 @@ const RmaForm = () => {
     <>
       <form onSubmit={handleFormSubmit}>
         <h1>RMA Form</h1>
+        <h2>
+        RMA Filing Instructions
+        </h2>
+        <h4 style={{ color: "red" }}>
+
+Please fill out the form below and click the "submit" button once completed.<br /><br />
+
+Please save this paperwork as a PDF and attach it to the main RMA form before hitting "submit." If you choose to print the additional paperwork, you must still attach the completed document as a scanned PDF to the main RMA form before hitting "submit."<br /><br />
+
+RMAs submitted without the pre-test requirements will be rejected by Victron. <br /><br />
+
+Questions? Contact Claire at <a href= "mailto:claire@artek.energy">claire@artek.energy</a>
+<br /><br />
+        </h4>
+
+        <h2>
+        General information
+        </h2>
         <TextInput
           label="First Name:"
           name="firstName"
@@ -318,12 +336,14 @@ const RmaForm = () => {
           onFileChange={handleFileChange}
           selectedFile={selectedFile}
         />
+        <br />
 
         {/* Submit Button */}
         <button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Submitting..." : "Submit"}
         </button>
       </form>
+    
 
       <ToastContainer />
     </>
