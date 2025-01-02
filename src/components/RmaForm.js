@@ -1,15 +1,15 @@
-import React, { useState } from "react"
-import TextInput from "./TextInput"
-import RadioButton from "./RadioButton"
-import CheckboxInput from "./CheckboxInput"
-import TextArea from "./TextArea"
-import IFrame from "./IFrame"
-import FileUpload from "./FileUpload"
-import { ToastContainer, toast } from "react-toastify"
-import "react-toastify/dist/ReactToastify.css"
+import React, { useState } from "react";
+import TextInput from "./TextInput";
+import RadioButton from "./RadioButton";
+import CheckboxInput from "./CheckboxInput";
+import TextArea from "./TextArea";
+import IFrame from "./IFrame";
+import FileUpload from "./FileUpload";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const GAS_WEB_APP_URL =
-  "https://script.google.com/macros/s/AKfycbzfitdONVs-z-Ee0bpSdEq55Au3-K6w05RuhkaVuSlTvOsteBPoAT4PCKTESQ3Tu7_X/exec"
+  "https://script.google.com/macros/s/AKfycbzfitdONVs-z-Ee0bpSdEq55Au3-K6w05RuhkaVuSlTvOsteBPoAT4PCKTESQ3Tu7_X/exec";
 
 const RmaForm = () => {
   const [formData, setFormData] = useState({
@@ -26,22 +26,22 @@ const RmaForm = () => {
     firmwareVersion: "",
     failureDescription: "",
     acknowledgeShippingCosts: false,
-  })
+  });
 
-  const [selectedFile, setSelectedFile] = useState(null)
-  const [isSubmitting, setIsSubmitting] = useState(false) // State to manage submission status
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false); // State to manage submission status
 
   const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target
+    const { name, value, type, checked } = e.target;
     setFormData((prevData) => ({
       ...prevData,
       [name]: type === "checkbox" ? checked : value,
-    }))
-  }
+    }));
+  };
 
   const handleFileChange = (file) => {
-    setSelectedFile(file)
-  }
+    setSelectedFile(file);
+  };
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -52,7 +52,7 @@ const RmaForm = () => {
         setIsSubmitting(false); // Reset submitting state
         return;
       }
-  
+
       // Read the file as Base64
       const fileBase64 = await new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -63,7 +63,7 @@ const RmaForm = () => {
         };
         reader.onerror = (error) => reject(error);
       });
-  
+
       // Prepare form data
       const urlEncodedData = new URLSearchParams();
       urlEncodedData.append("action", "submitAndUpload"); // Ensure action matches backend
@@ -75,7 +75,7 @@ const RmaForm = () => {
       urlEncodedData.append("fileName", selectedFile.name); // Include file name
       urlEncodedData.append("fileType", selectedFile.type); // Include file type
       urlEncodedData.append("fileData", fileBase64); // Include Base64 encoded file data
-  
+
       // Send data to GAS
       const response = await fetch(GAS_WEB_APP_URL, {
         method: "POST",
@@ -84,10 +84,10 @@ const RmaForm = () => {
         },
         body: urlEncodedData.toString(),
       });
-  
+
       const responseText = await response.text();
       const responseData = JSON.parse(responseText);
-  
+
       if (response.ok && responseData.status === "success") {
         toast.success("Form submitted successfully!");
         // Reset form and file state
@@ -122,24 +122,28 @@ const RmaForm = () => {
     <>
       <form onSubmit={handleFormSubmit}>
         <h1>RMA Form</h1>
-        <h2>
-        RMA Filing Instructions
-        </h2>
+        <h2>RMA Filing Instructions</h2>
         <h4 style={{ color: "red" }}>
-
-Please fill out the form below and click the "submit" button once completed.<br /><br />
-
-Please save this paperwork as a PDF and attach it to the main RMA form before hitting "submit." If you choose to print the additional paperwork, you must still attach the completed document as a scanned PDF to the main RMA form before hitting "submit."<br /><br />
-
-RMAs submitted without the pre-test requirements will be rejected by Victron. <br /><br />
-
-Questions? Contact Claire at <a href= "mailto:claire@artek.energy">claire@artek.energy</a>
-<br /><br />
+          Please fill out the form below and click the "submit" button once
+          completed.
+          <br />
+          <br />
+          Please save this paperwork as a PDF and attach it to the main RMA form
+          before hitting "submit." If you choose to print the additional
+          paperwork, you must still attach the completed document as a scanned
+          PDF to the main RMA form before hitting "submit."
+          <br />
+          <br />
+          RMAs submitted without the pre-test requirements will be rejected by
+          Victron. <br />
+          <br />
+          Questions? Contact Claire at{" "}
+          <a href="mailto:claire@artek.energy">claire@artek.energy</a>
+          <br />
+          <br />
         </h4>
 
-        <h2>
-        General information
-        </h2>
+        <h2>General information</h2>
         <TextInput
           label="First Name:"
           name="firstName"
@@ -181,7 +185,7 @@ Questions? Contact Claire at <a href= "mailto:claire@artek.energy">claire@artek.
           onChange={handleInputChange}
         />
         <TextInput
-          label="Serial Number (Begins in &quot;HQ&quot;):"
+          label='Serial Number (Begins in "HQ"):'
           name="serialNumber"
           value={formData.serialNumber}
           onChange={handleInputChange}
@@ -343,11 +347,10 @@ Questions? Contact Claire at <a href= "mailto:claire@artek.energy">claire@artek.
           {isSubmitting ? "Submitting..." : "Submit"}
         </button>
       </form>
-    
 
       <ToastContainer />
     </>
-  )
-}
+  );
+};
 
-export default RmaForm
+export default RmaForm;
