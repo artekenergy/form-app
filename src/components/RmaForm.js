@@ -181,7 +181,7 @@ Questions? Contact Claire at <a href= "mailto:claire@artek.energy">claire@artek.
           onChange={handleInputChange}
         />
         <TextInput
-          label="Serial Number:"
+          label="Serial Number (Begins in &quot;HQ&quot;):"
           name="serialNumber"
           value={formData.serialNumber}
           onChange={handleInputChange}
