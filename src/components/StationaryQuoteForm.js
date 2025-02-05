@@ -8,7 +8,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const GAS_WEB_APP_URL =
-  "https://script.google.com/macros/s/AKfycbznLTwm4ak64QTYFE6Nl1qf9ghMvJ__KrQOJKpjl4UsTiFjLX3i5ui7RrGgKgFVxsSh/exec";
+  "https://script.google.com/macros/s/AKfycbzd2lXHWcf_OxzhH0qsutWGEHlBZH8WKnvslcSfZw7LaF4iTCt-wiChixN_PPHBEPxh/exec";
 
 const StationaryQuoteForm = () => {
   const [formData, setFormData] = useState({
