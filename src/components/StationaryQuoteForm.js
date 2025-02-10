@@ -1,14 +1,14 @@
-import React, { useState } from "react";
-import TextInput from "./TextInput";
-import RadioButton from "./RadioButton";
-import CheckboxInput from "./CheckboxInput";
-import TextArea from "./TextArea";
-import NumberInput from "./NumberInput";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import React, { useState } from "react"
+import TextInput from "./TextInput"
+import RadioButton from "./RadioButton"
+import CheckboxInput from "./CheckboxInput"
+import TextArea from "./TextArea"
+import NumberInput from "./NumberInput"
+import { ToastContainer, toast } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
 
 const GAS_WEB_APP_URL =
-  "https://script.google.com/macros/s/AKfycbzd2lXHWcf_OxzhH0qsutWGEHlBZH8WKnvslcSfZw7LaF4iTCt-wiChixN_PPHBEPxh/exec";
+  "https://script.google.com/macros/s/AKfycbzd2lXHWcf_OxzhH0qsutWGEHlBZH8WKnvslcSfZw7LaF4iTCt-wiChixN_PPHBEPxh/exec"
 
 const StationaryQuoteForm = () => {
   const [formData, setFormData] = useState({
@@ -64,46 +64,46 @@ const StationaryQuoteForm = () => {
       timeline: "",
       additionalDetails: "",
     },
-  });
+  })
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    const keys = name.split(".");
+    const { name, value, type, checked } = e.target
+    const keys = name.split(".")
     setFormData((prevData) => {
-      let data = { ...prevData };
-      let current = data;
+      let data = { ...prevData }
+      let current = data
       for (let i = 0; i < keys.length - 1; i++) {
-        if (!current[keys[i]]) current[keys[i]] = {};
-        current = current[keys[i]];
+        if (!current[keys[i]]) current[keys[i]] = {}
+        current = current[keys[i]]
       }
-      current[keys[keys.length - 1]] = type === "checkbox" ? checked : value;
-      return data;
-    });
-  };
+      current[keys[keys.length - 1]] = type === "checkbox" ? checked : value
+      return data
+    })
+  }
 
   const handleFormSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-  
+    e.preventDefault()
+    setIsSubmitting(true)
+
     try {
-      const urlEncodedData = new URLSearchParams();
-  
+      const urlEncodedData = new URLSearchParams()
+
       // Add the required "action" parameter
-      urlEncodedData.append("action", "submitStationaryQuote");
-  
+      urlEncodedData.append("action", "submitStationaryQuote")
+
       // Flatten and encode form data
       for (const key in formData) {
         if (formData.hasOwnProperty(key)) {
           if (typeof formData[key] === "object") {
-            urlEncodedData.append(key, JSON.stringify(formData[key]));
+            urlEncodedData.append(key, JSON.stringify(formData[key]))
           } else {
-            urlEncodedData.append(key, formData[key]);
+            urlEncodedData.append(key, formData[key])
           }
         }
       }
-  
+
       // Send the POST request
       const response = await fetch(GAS_WEB_APP_URL, {
         method: "POST",
@@ -111,13 +111,13 @@ const StationaryQuoteForm = () => {
           "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
         },
         body: urlEncodedData.toString(),
-      });
-  
-      const responseText = await response.text();
-      const responseData = JSON.parse(responseText);
-  
+      })
+
+      const responseText = await response.text()
+      const responseData = JSON.parse(responseText)
+
       if (response.ok && responseData.status === "success") {
-        toast.success("Form submitted successfully!");
+        toast.success("Form submitted successfully!")
         // Reset form state
         setFormData({
           firstName: "",
@@ -172,18 +172,17 @@ const StationaryQuoteForm = () => {
             timeline: "",
             additionalDetails: "",
           },
-        });
+        })
       } else {
-        throw new Error(responseData.message || "Unknown error occurred.");
+        throw new Error(responseData.message || "Unknown error occurred.")
       }
     } catch (error) {
-      console.error("Error submitting form:", error);
-      toast.error("Failed to submit the form. Please try again.");
+      console.error("Error submitting form:", error)
+      toast.error("Failed to submit the form. Please try again.", error)
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
-
+  }
 
   return (
     <form onSubmit={handleFormSubmit}>
@@ -198,6 +197,9 @@ const StationaryQuoteForm = () => {
         onChange={handleInputChange}
         required
       />
+      <p>
+        <i>Required</i>
+      </p>
       <TextInput
         label="Last Name:"
         name="lastName"
@@ -211,6 +213,9 @@ const StationaryQuoteForm = () => {
         value={formData.company}
         onChange={handleInputChange}
       />
+      <p>
+        <i>Required</i>
+      </p>
       <TextInput
         label="Email:"
         name="email"
@@ -219,6 +224,9 @@ const StationaryQuoteForm = () => {
         onChange={handleInputChange}
         required
       />
+      <p>
+        <i>Required</i>
+      </p>
       <TextInput
         label="Phone:"
         name="phone"
@@ -521,12 +529,12 @@ const StationaryQuoteForm = () => {
         rows={6}
       />
 
-<button type="submit" disabled={isSubmitting}>
+      <button type="submit" disabled={isSubmitting}>
         {isSubmitting ? "Submitting..." : "Submit"}
       </button>
       <ToastContainer />
     </form>
-  );
-};
+  )
+}
 
-export default StationaryQuoteForm;
+export default StationaryQuoteForm
