@@ -177,8 +177,11 @@ const StationaryQuoteForm = () => {
         throw new Error(responseData.message || "Unknown error occurred.")
       }
     } catch (error) {
+      const errorMessage = error
       console.error("Error submitting form:", error)
-      toast.error("Failed to submit the form. Please try again.", error)
+      toast.error(
+        "Failed to submit the form. Please try again. " + errorMessage
+      )
     } finally {
       setIsSubmitting(false)
     }
@@ -197,9 +200,6 @@ const StationaryQuoteForm = () => {
         onChange={handleInputChange}
         required
       />
-      <p>
-        <i>Required</i>
-      </p>
       <TextInput
         label="Last Name:"
         name="lastName"
@@ -213,9 +213,6 @@ const StationaryQuoteForm = () => {
         value={formData.company}
         onChange={handleInputChange}
       />
-      <p>
-        <i>Required</i>
-      </p>
       <TextInput
         label="Email:"
         name="email"
@@ -224,9 +221,6 @@ const StationaryQuoteForm = () => {
         onChange={handleInputChange}
         required
       />
-      <p>
-        <i>Required</i>
-      </p>
       <TextInput
         label="Phone:"
         name="phone"
