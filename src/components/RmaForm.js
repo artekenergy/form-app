@@ -1,15 +1,16 @@
-import React, { useState } from "react";
-import TextInput from "./TextInput";
-import RadioButton from "./RadioButton";
-import CheckboxInput from "./CheckboxInput";
-import TextArea from "./TextArea";
-import IFrame from "./IFrame";
-import FileUpload from "./FileUpload";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import React, { useState } from "react"
+import TextInput from "./TextInput"
+import RadioButton from "./RadioButton"
+import CheckboxInput from "./CheckboxInput"
+import TextArea from "./TextArea"
+// import IFrame from "./IFrame"; // Remove or comment out
+import FileUpload from "./FileUpload"
+import { ToastContainer, toast } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
+import BenchTestModal from "./BenchTestModal" // <-- import our modal
 
 const GAS_WEB_APP_URL =
-  "https://script.google.com/macros/s/AKfycbxROdBsUMRx0ngUpsPC8_jj9zbtwTGWCy1F9wsvZD8NlY4HVOerPOxJUokt_VPvmz_8/exec";
+  "https://script.google.com/macros/s/AKfycbxROdBsUMRx0ngUpsPC8_jj9zbtwTGWCy1F9wsvZD8NlY4HVOerPOxJUokt_VPvmz_8/exec"
 
 const RmaForm = () => {
   const [formData, setFormData] = useState({
@@ -26,55 +27,70 @@ const RmaForm = () => {
     firmwareVersion: "",
     failureDescription: "",
     acknowledgeShippingCosts: false,
-  });
+  })
 
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false); // State to manage submission status
+  const [selectedFile, setSelectedFile] = useState(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // State for controlling the modal
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selectedProduct, setSelectedProduct] = useState(null)
+
+  const handleOpenModal = (productType) => {
+    setSelectedProduct(productType)
+    setIsModalOpen(true)
+  }
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false)
+    setSelectedProduct(null)
+  }
 
   const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value, type, checked } = e.target
     setFormData((prevData) => ({
       ...prevData,
       [name]: type === "checkbox" ? checked : value,
-    }));
-  };
+    }))
+  }
 
   const handleFileChange = (file) => {
-    setSelectedFile(file);
-  };
+    setSelectedFile(file)
+  }
 
   const handleFormSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true); // Set submitting state to true
+    e.preventDefault()
+    setIsSubmitting(true)
+
     try {
       if (!selectedFile) {
-        toast.error("Please upload a file before submitting.");
-        setIsSubmitting(false); // Reset submitting state
-        return;
+        toast.error("Please upload a file (PDF of pre-test) before submitting.")
+        setIsSubmitting(false)
+        return
       }
 
       // Read the file as Base64
       const fileBase64 = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(selectedFile);
+        const reader = new FileReader()
+        reader.readAsDataURL(selectedFile)
         reader.onload = () => {
-          const base64String = reader.result.split(",")[1]; // Remove the Data URL prefix
-          resolve(base64String);
-        };
-        reader.onerror = (error) => reject(error);
-      });
+          const base64String = reader.result.split(",")[1]
+          resolve(base64String)
+        }
+        reader.onerror = (error) => reject(error)
+      })
 
       // Prepare form data
-      const urlEncodedData = new URLSearchParams();
-      urlEncodedData.append("action", "submitAndUpload"); // Ensure action matches backend
+      const urlEncodedData = new URLSearchParams()
+      urlEncodedData.append("action", "submitAndUpload")
       for (const key in formData) {
         if (formData.hasOwnProperty(key)) {
-          urlEncodedData.append(key, formData[key]); // Append each form field
+          urlEncodedData.append(key, formData[key])
         }
       }
-      urlEncodedData.append("fileName", selectedFile.name); // Include file name
-      urlEncodedData.append("fileType", selectedFile.type); // Include file type
-      urlEncodedData.append("fileData", fileBase64); // Include Base64 encoded file data
+      urlEncodedData.append("fileName", selectedFile.name)
+      urlEncodedData.append("fileType", selectedFile.type)
+      urlEncodedData.append("fileData", fileBase64)
 
       // Send data to GAS
       const response = await fetch(GAS_WEB_APP_URL, {
@@ -83,13 +99,13 @@ const RmaForm = () => {
           "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
         },
         body: urlEncodedData.toString(),
-      });
+      })
 
-      const responseText = await response.text();
-      const responseData = JSON.parse(responseText);
+      const responseText = await response.text()
+      const responseData = JSON.parse(responseText)
 
       if (response.ok && responseData.status === "success") {
-        toast.success("Form submitted successfully!");
+        toast.success("Form submitted successfully!")
         // Reset form and file state
         setFormData({
           firstName: "",
@@ -105,18 +121,18 @@ const RmaForm = () => {
           firmwareVersion: "",
           failureDescription: "",
           acknowledgeShippingCosts: false,
-        });
-        setSelectedFile(null);
+        })
+        setSelectedFile(null)
       } else {
-        throw new Error(responseData.message || "Unknown error occurred.");
+        throw new Error(responseData.message || "Unknown error occurred.")
       }
     } catch (error) {
-      console.error("Error submitting form:", error);
-      toast.error("Failed to submit the form. Please try again.");
+      console.error("Error submitting form:", error)
+      toast.error("Failed to submit the form. Please try again.")
     } finally {
-      setIsSubmitting(false); // Reset submitting state
+      setIsSubmitting(false)
     }
-  };
+  }
 
   return (
     <>
@@ -128,14 +144,11 @@ const RmaForm = () => {
           completed.
           <br />
           <br />
-          Please save this paperwork as a PDF and attach it to the main RMA form
-          before hitting "submit." If you choose to print the additional
-          paperwork, you must still attach the completed document as a scanned
-          PDF to the main RMA form before hitting "submit."
+          Please save the Pre-RMA Bench Test form as a PDF and attach it below
+          before hitting "submit."
           <br />
           <br />
-          RMAs submitted without the pre-test requirements will be rejected by
-          Victron. <br />
+          RMAs submitted without the pre-test requirements will be rejected.
           <br />
           Questions? Contact Claire at{" "}
           <a href="mailto:claire@artek.energy">claire@artek.energy</a>
@@ -237,105 +250,105 @@ const RmaForm = () => {
         />
 
         <h2>Pre-RMA Bench Test Instructions</h2>
-
         <p>
-          To file an RMA for any of the following product categories, you will
-          need to complete the associated form. Once the form is completed
-          online, download the completed form as a PDF and attach it below.
+          Select a product below to open the associated Pre-RMA Bench Test
+          Instructions. Complete the form in the popup, export as PDF, and then
+          attach it below before submitting.
         </p>
-        <div className="rmaProductList">
+        <div style={{ marginBottom: "1rem" }}>
           <ul>
             <li>
-              <IFrame
-                url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form---inverter.html"
-                title="Inverter"
-                width="100%"
-                height="80%"
-              />
+              <button
+                type="button"
+                className="modal-btn"
+                onClick={() => handleOpenModal("inverter")}
+              >
+                Inverter
+              </button>
             </li>
             <li>
-              <IFrame
-                url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form-sun-inverter.html"
-                title="Sun Inverter"
-                width="100%"
-                height="80%"
-              />
+              <button
+                type="button"
+                className="modal-btn"
+                onClick={() => handleOpenModal("sunInverter")}
+              >
+                Sun Inverter
+              </button>
             </li>
             <li>
-              <IFrame
-                url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form---inverter-charger.html"
-                title="Inverter/Charger"
-                width="100%"
-                height="80%"
-              />
+              <button
+                type="button"
+                className="modal-btn"
+                onClick={() => handleOpenModal("inverterCharger")}
+              >
+                Inverter/Charger
+              </button>
             </li>
             <li>
-              <IFrame
-                url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form---smart-charger.html"
-                title="Smart Charger"
-                width="100%"
-                height="80%"
-              />
+              <button
+                type="button"
+                className="modal-btn"
+                onClick={() => handleOpenModal("smartCharger")}
+              >
+                SmartSolar MPPT RS Charger
+              </button>
             </li>
             <li>
-              <IFrame
-                url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form---mppt-solar-charger.html"
-                title="MPPT Solar Charger"
-                width="100%"
-                height="80%"
-              />
+              <button
+                type="button"
+                className="modal-btn"
+                onClick={() => handleOpenModal("mpptCharger")}
+              >
+                MPPT Solar Charger
+              </button>
             </li>
             <li>
-              <IFrame
-                url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form---smartsolar-mppt-rs.html"
-                title="SmartSolar MPPT RS Charger"
-                width="100%"
-                height="80%"
-              />
+              <button
+                type="button"
+                className="modal-btn"
+                onClick={() => handleOpenModal("bmvBatteryMonitor")}
+              >
+                BMV Battery Monitors
+              </button>
             </li>
             <li>
-              <IFrame
-                url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form---bmv-battery-monitor.html"
-                title="BMV Battery Monitors"
-                width="100%"
-                height="80%"
-              />
+              <button
+                type="button"
+                className="modal-btn"
+                onClick={() => handleOpenModal("batteryProtect")}
+              >
+                Battery Protect
+              </button>
             </li>
             <li>
-              <IFrame
-                url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form---batteryprotect.html"
-                title="Battery Protect"
-                width="100%"
-                height="80%"
-              />
+              <button
+                type="button"
+                className="modal-btn"
+                onClick={() => handleOpenModal("orion")}
+              >
+                Orion-Tr DC-DC Converter
+              </button>
             </li>
             <li>
-              <IFrame
-                url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form---orion-tr-dc-dc-converter.html"
-                title="Orion-Tr DC-DC Converter"
-                width="100%"
-                height="80%"
-              />
+              <button
+                type="button"
+                className="modal-btn"
+                onClick={() => handleOpenModal("leadBattery")}
+              >
+                Lead Acid Battery
+              </button>
             </li>
             <li>
-              <IFrame
-                url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form---lead-acid-battery.html"
-                title="Lead Acid Battery"
-                width="100%"
-                height="80%"
-              />
-            </li>
-            <li>
-              <IFrame
-                url="https://www.victronenergy.com/media/pg/Pre-RMA_Bench_Test_Instructions/en/pre-rma-test-form---lithium-battery-smart.html"
-                title="Smart Lithium Battery"
-                width="100%"
-                height="80%"
-              />
+              <button
+                type="button"
+                className="modal-btn"
+                onClick={() => handleOpenModal("lithiumBattery")}
+              >
+                Smart Lithium Battery
+              </button>
             </li>
           </ul>
         </div>
-
         <FileUpload
           onFileChange={handleFileChange}
           selectedFile={selectedFile}
@@ -349,8 +362,15 @@ const RmaForm = () => {
       </form>
 
       <ToastContainer />
-    </>
-  );
-};
 
-export default RmaForm;
+      {/* Our new modal component */}
+      <BenchTestModal
+        isOpen={isModalOpen}
+        onRequestClose={handleCloseModal}
+        productType={selectedProduct}
+      />
+    </>
+  )
+}
+
+export default RmaForm

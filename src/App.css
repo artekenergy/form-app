@@ -79,7 +79,10 @@ a {
   text-decoration: none;
 }
 
-
+ul {
+  list-style-position: inside;
+  list-style: none;
+}
 
 .homeContent {
   display: flex;
@@ -121,6 +124,22 @@ a {
 .rmaProductList {
   display: flex;
   margin: 2rem;
+}
+
+.modal-btn {
+  display: inline-block;
+  background-color: #fff;
+  color: #38526e;
+  padding: 5px 25px;
+  border: none;
+  border-radius: 5px; /* or 3px + 12px, whichever you prefer */
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.modal-btn:hover {
+  background-color: #fff;
+  text-decoration-line: underline;
 }
 
 /* Submit button */
@@ -193,7 +212,6 @@ button[type="submit"]:hover {
   color: azure;
 }
 
-
 /* Overlay background */
 .popup-overlay {
   position: fixed;
@@ -233,7 +251,6 @@ button[type="submit"]:hover {
 .popup-iframe {
   border: none;
 }
-
 
 /* Responsive adjustments */
 @media (max-width: 600px) {
