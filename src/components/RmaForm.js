@@ -9,7 +9,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const GAS_WEB_APP_URL =
-  "https://script.google.com/macros/s/AKfycbxgPLsk2D2z-x1s3XqgYe4ac35ZAHzr81144O-BxWjOGrktZMn-hbKyfY3yedA1IMU/exec";
+  "https://script.google.com/macros/s/AKfycbxtDbbkiXUFFGwEWvDt4WU7adFFLWG8ZBtLRNzTmL7IY-FY3AUPBp2eiqrD0v24vZHS/exec";
 
 const RmaForm = () => {
   const [formData, setFormData] = useState({
@@ -83,6 +83,7 @@ const RmaForm = () => {
           "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
         },
         body: urlEncodedData.toString(),
+        mode: 'cors', // Ensure CORS mode is set
       });
 
       const responseText = await response.text();
