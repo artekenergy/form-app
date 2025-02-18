@@ -9,7 +9,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const GAS_WEB_APP_URL =
-  "https://script.google.com/macros/s/AKfycbxXnKSA7R7hFE5BhSe_3xmxQszfL2xMkweGnTQfLp8lDCsfk6_9t687vQpMgV9yUnMk/exec";
+  "https://script.google.com/macros/s/AKfycbzMRbR-ioAln9si9Hm1q9VZuMhtQQLQMCRpxZSQRnFpaFM7wrSS_MhmwGJQczyXX7c/exec";
 
 const RmaForm = () => {
   const [formData, setFormData] = useState({
