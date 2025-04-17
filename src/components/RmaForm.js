@@ -47,22 +47,7 @@ const RmaForm = () => {
     e.preventDefault();
     setIsSubmitting(true); // Set submitting state to true
     try {
-      if (!selectedFile) {
-        toast.error("Please upload a file before submitting.");
-        setIsSubmitting(false); // Reset submitting state
-        return;
-      }
-
-      // Read the file as Base64
-      const fileBase64 = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(selectedFile);
-        reader.onload = () => {
-          const base64String = reader.result.split(",")[1]; // Remove the Data URL prefix
-          resolve(base64String);
-        };
-        reader.onerror = (error) => reject(error);
-      });
+      // Remove the file validation check that was here
 
       // Prepare form data
       const urlEncodedData = new URLSearchParams();
@@ -72,9 +57,27 @@ const RmaForm = () => {
           urlEncodedData.append(key, formData[key]); // Append each form field
         }
       }
-      urlEncodedData.append("fileName", selectedFile.name); // Include file name
-      urlEncodedData.append("fileType", selectedFile.type); // Include file type
-      urlEncodedData.append("fileData", fileBase64); // Include Base64 encoded file data
+
+      // Only process file data if a file was selected
+      if (selectedFile) {
+        // Read the file as Base64
+        const fileBase64 = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(selectedFile);
+          reader.onload = () => {
+            const base64String = reader.result.split(",")[1]; // Remove the Data URL prefix
+            resolve(base64String);
+          };
+          reader.onerror = (error) => reject(error);
+        });
+
+        urlEncodedData.append("fileName", selectedFile.name); // Include file name
+        urlEncodedData.append("fileType", selectedFile.type); // Include file type
+        urlEncodedData.append("fileData", fileBase64); // Include Base64 encoded file data
+      } else {
+        // Indicate no file was uploaded
+        urlEncodedData.append("fileUploaded", "false");
+      }
 
       // Send data to GAS
       const response = await fetch(GAS_WEB_APP_URL, {
@@ -83,7 +86,7 @@ const RmaForm = () => {
           "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
         },
         body: urlEncodedData.toString(),
-        mode: 'cors', // Ensure CORS mode is set
+        mode: "cors", // Ensure CORS mode is set
       });
 
       const responseText = await response.text();
