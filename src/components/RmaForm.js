@@ -146,7 +146,6 @@ const RmaForm = () => {
           <br />
           <br />
         </h4>
-
         <h2>General information</h2>
         <TextInput
           label="First Name:"
@@ -239,9 +238,7 @@ const RmaForm = () => {
           checked={formData.acknowledgeShippingCosts}
           onChange={handleInputChange}
         />
-
         <h2>Pre-RMA Bench Test Instructions</h2>
-
         <p>
           To file an RMA for any of the following product categories, you will
           need to complete the associated form.
@@ -340,6 +337,10 @@ const RmaForm = () => {
         </div>
         <br />
 
+        <p>
+        By clickig submit, you aknowledge that you have completed the pre-RMA
+        bench if neccessary for the product.
+        </p>
         {/* Submit Button */}
         <button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Submitting..." : "Submit"}
