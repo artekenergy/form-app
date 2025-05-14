@@ -335,12 +335,13 @@ const RmaForm = () => {
             </li>
           </ul>
         </div>
-        <br />
+
 
         <p>
         By clickig submit, you aknowledge that you have completed the pre-RMA
         bench if neccessary for the product.
         </p>
+                <br />
         {/* Submit Button */}
         <button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Submitting..." : "Submit"}
