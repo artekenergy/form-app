@@ -244,8 +244,7 @@ const RmaForm = () => {
 
         <p>
           To file an RMA for any of the following product categories, you will
-          need to complete the associated form. Once the form is completed
-          online, download the completed form as a PDF and attach it below.
+          need to complete the associated form.
         </p>
         <div className="rmaProductList">
           <ul>
@@ -339,11 +338,6 @@ const RmaForm = () => {
             </li>
           </ul>
         </div>
-
-        <FileUpload
-          onFileChange={handleFileChange}
-          selectedFile={selectedFile}
-        />
         <br />
 
         {/* Submit Button */}
