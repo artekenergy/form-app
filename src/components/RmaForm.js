@@ -240,8 +240,7 @@ const RmaForm = () => {
         />
         <h2>Pre-RMA Bench Test Instructions</h2>
         <p>
-          To file an RMA for any of the following product categories, you will
-          need to complete the associated form.
+          To file an RMA for any of the product categories listed below, please perform a Pre-RMA test. You will need to follow the specific instructions provided by Victron Energy for your product.
         </p>
         <div className="rmaProductList">
           <ul>
@@ -338,8 +337,7 @@ const RmaForm = () => {
 
 
         <p>
-        By clickig submit, you aknowledge that you have completed the pre-RMA
-        bench if neccessary for the product.
+        By clicking "Submit," you acknowledge that you have completed the Pre-RMA test if it was necessary for the product.
         </p>
                 <br />
         {/* Submit Button */}
