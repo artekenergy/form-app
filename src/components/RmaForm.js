@@ -182,7 +182,7 @@ const RmaForm = () => {
           onChange={handleInputChange}
         />
         <TextInput
-          label="Shipping Address:"
+          label="Shipping Address (please provide desired shipping address for potential replacement item):"
           name="shippingAddress"
           value={formData.shippingAddress}
           onChange={handleInputChange}
