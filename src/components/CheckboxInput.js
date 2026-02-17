@@ -11,7 +11,7 @@ const CheckboxInput = ({ label, name, checked, onChange, required }) => {
           onChange={onChange}
           required={required}
         />
-        {label}
+        {label}{required && <span className="required-asterisk"> *</span>}
       </label>
     </div>
   )

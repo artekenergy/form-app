@@ -235,6 +235,12 @@ button[type="submit"]:hover {
 }
 
 
+/* Required field asterisk */
+.required-asterisk {
+  color: red;
+  font-weight: bold;
+}
+
 /* Responsive adjustments */
 @media (max-width: 600px) {
   form {

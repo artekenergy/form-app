@@ -3,7 +3,7 @@ import React from "react"
 const RadioButton = ({ label, name, value, options, onChange, required }) => {
   return (
     <div>
-      <label>{label}</label>
+      <label>{label}{required && <span className="required-asterisk"> *</span>}</label>
       <div>
         {options.map((option) => (
           <label key={option.value} style={{ marginRight: "10px" }}>

@@ -3,7 +3,7 @@ import React from "react"
 const TextArea = ({ label, name, value, onChange, rows, required }) => {
   return (
     <div>
-      <label>{label}</label>
+      <label>{label}{required && <span className="required-asterisk"> *</span>}</label>
       <textarea
         name={name}
         value={value}
