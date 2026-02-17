@@ -9,7 +9,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const GAS_WEB_APP_URL =
-  "https://script.google.com/macros/s/AKfycbyZk9o4kRV6plYIv5ggoSzFNy2Og8ZIPk6ajpjvkqcw6EuM09bs2za4aXOo93O-9X2i/exec";
+  "https://script.google.com/macros/s/AKfycbxy2AN0ePeclUXuK1-T_VHmNEbw2MYrL1bOwBL-iL0fFos3o_F-3X8ODpYsKmx3HgxQ/exec";
 
 const RmaForm = () => {
   const generateRmaNumber = () => {
