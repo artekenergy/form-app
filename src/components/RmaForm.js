@@ -13,9 +13,12 @@ const GAS_WEB_APP_URL =
 
 const RmaForm = () => {
   const generateRmaNumber = () => {
-    const timestamp = Date.now().toString(36).toUpperCase();
+    const now = new Date();
+    const date = now.getFullYear().toString() +
+      (now.getMonth() + 1).toString().padStart(2, '0') +
+      now.getDate().toString().padStart(2, '0');
     const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-    return `RMA-${timestamp}-${random}`;
+    return `RMA-${date}-${random}`;
   };
 
   const [rmaNumber] = useState(generateRmaNumber);
