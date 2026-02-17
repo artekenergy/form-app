@@ -1,6 +1,6 @@
 import React from "react"
 
-const CheckboxInput = ({ label, name, checked, onChange }) => {
+const CheckboxInput = ({ label, name, checked, onChange, required }) => {
   return (
     <div>
       <label>
@@ -9,6 +9,7 @@ const CheckboxInput = ({ label, name, checked, onChange }) => {
           name={name}
           checked={checked}
           onChange={onChange}
+          required={required}
         />
         {label}
       </label>

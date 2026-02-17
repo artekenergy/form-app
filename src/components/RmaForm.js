@@ -166,6 +166,7 @@ const RmaForm = () => {
           name="company"
           value={formData.company}
           onChange={handleInputChange}
+          required
         />
         <TextInput
           label="Email:"
@@ -180,18 +181,21 @@ const RmaForm = () => {
           name="phone"
           value={formData.phone}
           onChange={handleInputChange}
+          required
         />
         <TextInput
           label="Shipping Address (please provide desired shipping address for potential replacement item):"
           name="shippingAddress"
           value={formData.shippingAddress}
           onChange={handleInputChange}
+          required
         />
         <TextInput
           label='Serial Number (Begins in "HQ"):'
           name="serialNumber"
           value={formData.serialNumber}
           onChange={handleInputChange}
+          required
         />
         <TextInput
           label="Installation Date:"
@@ -199,6 +203,7 @@ const RmaForm = () => {
           type="date"
           value={formData.installationDate}
           onChange={handleInputChange}
+          required
         />
         <TextInput
           label="Failure Date:"
@@ -206,6 +211,7 @@ const RmaForm = () => {
           type="date"
           value={formData.failureDate}
           onChange={handleInputChange}
+          required
         />
         <RadioButton
           label="Firmware Updated?"
@@ -217,6 +223,7 @@ const RmaForm = () => {
             { label: "Not Applicable", value: "na" },
           ]}
           onChange={handleInputChange}
+          required
         />
         {formData.firmwareUpdated === "yes" && (
           <TextInput
@@ -224,6 +231,7 @@ const RmaForm = () => {
             name="firmwareVersion"
             value={formData.firmwareVersion}
             onChange={handleInputChange}
+            required
           />
         )}
         <TextArea
@@ -231,12 +239,14 @@ const RmaForm = () => {
           name="failureDescription"
           value={formData.failureDescription}
           onChange={handleInputChange}
+          required
         />
         <CheckboxInput
           label="I acknowledge that Artek does not cover shipping costs for replacement products or shipping to and from repair centers."
           name="acknowledgeShippingCosts"
           checked={formData.acknowledgeShippingCosts}
           onChange={handleInputChange}
+          required
         />
         <h2>Pre-RMA Bench Test Instructions</h2>
         <p>
