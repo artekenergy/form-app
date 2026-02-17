@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TextInput from "./TextInput";
 import RadioButton from "./RadioButton";
 import CheckboxInput from "./CheckboxInput";
@@ -9,9 +9,17 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const GAS_WEB_APP_URL =
-  "https://script.google.com/macros/s/AKfycbyTdqjkpQa0wxVz8Zw3iO6zt9e-wQ8Mk38e46C8TKXOTaVj1U76VN3q6RNvvCSjUftR/exec";
+  "https://script.google.com/macros/s/AKfycbyZk9o4kRV6plYIv5ggoSzFNy2Og8ZIPk6ajpjvkqcw6EuM09bs2za4aXOo93O-9X2i/exec";
 
 const RmaForm = () => {
+  const generateRmaNumber = () => {
+    const timestamp = Date.now().toString(36).toUpperCase();
+    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+    return `RMA-${timestamp}-${random}`;
+  };
+
+  const [rmaNumber] = useState(generateRmaNumber);
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -19,6 +27,8 @@ const RmaForm = () => {
     email: "",
     phone: "",
     shippingAddress: "",
+    artekOrderNumber: "",
+    productSku: "",
     serialNumber: "",
     installationDate: "",
     failureDate: "",
@@ -52,6 +62,7 @@ const RmaForm = () => {
       // Prepare form data
       const urlEncodedData = new URLSearchParams();
       urlEncodedData.append("action", "submitAndUpload"); // Ensure action matches backend
+      urlEncodedData.append("rmaNumber", rmaNumber); // Include auto-generated RMA number
       for (const key in formData) {
         if (formData.hasOwnProperty(key)) {
           urlEncodedData.append(key, formData[key]); // Append each form field
@@ -102,6 +113,8 @@ const RmaForm = () => {
           email: "",
           phone: "",
           shippingAddress: "",
+          artekOrderNumber: "",
+          productSku: "",
           serialNumber: "",
           installationDate: "",
           failureDate: "",
@@ -125,7 +138,7 @@ const RmaForm = () => {
   return (
     <>
       <form onSubmit={handleFormSubmit}>
-        <h1>RMA Form</h1>
+        <h1>Victron RMA Submission Summary</h1>
         <h2>RMA Filing Instructions</h2>
         <h4 style={{ color: "red" }}>
           Please fill out the form below and click the "submit" button once
@@ -141,12 +154,15 @@ const RmaForm = () => {
           RMAs submitted without the pre-test requirements will be rejected by
           Victron. <br />
           <br />
-          Questions? Contact Claire at{" "}
-          <a href="mailto:claire@artek.energy">claire@artek.energy</a>
+          Questions? Contact Sales at{" "}
+          <a href="mailto:sales@artek.energy">sales@artek.energy</a>
           <br />
           <br />
         </h4>
         <h2>General information</h2>
+        <p style={{ marginBottom: "15px" }}>
+          <strong>RMA Number:</strong> {rmaNumber}
+        </p>
         <TextInput
           label="First Name:"
           name="firstName"
@@ -187,6 +203,20 @@ const RmaForm = () => {
           label="Shipping Address (please provide desired shipping address for potential replacement item):"
           name="shippingAddress"
           value={formData.shippingAddress}
+          onChange={handleInputChange}
+          required
+        />
+        <TextInput
+          label="Artek Order #:"
+          name="artekOrderNumber"
+          value={formData.artekOrderNumber}
+          onChange={handleInputChange}
+          required
+        />
+        <TextInput
+          label="Product SKU:"
+          name="productSku"
+          value={formData.productSku}
           onChange={handleInputChange}
           required
         />
