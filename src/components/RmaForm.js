@@ -150,7 +150,7 @@ const RmaForm = () => {
   return (
     <>
       <form onSubmit={handleFormSubmit}>
-        <h1>Victron RMA Submission Summary</h1>
+        <h1>RMA Submission Summary</h1>
         <h2>RMA Filing Instructions</h2>
         <h4 className="rma-instructions">
           Please fill out the form below and click the "submit" button once
