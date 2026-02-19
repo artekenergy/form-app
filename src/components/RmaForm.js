@@ -152,7 +152,7 @@ const RmaForm = () => {
       <form onSubmit={handleFormSubmit}>
         <h1>Victron RMA Submission Summary</h1>
         <h2>RMA Filing Instructions</h2>
-        <h4 style={{ color: "red" }}>
+        <h4 className="rma-instructions">
           Please fill out the form below and click the "submit" button once
           completed.
           <br />
@@ -172,7 +172,7 @@ const RmaForm = () => {
           <br />
         </h4>
         <h2>General information</h2>
-        <p style={{ marginBottom: "15px" }}>
+        <p className="rma-number">
           <strong>RMA Number:</strong> {rmaNumber}
         </p>
         <TextInput
