@@ -9,7 +9,7 @@
 
 /* Body styles */
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Segoe UI', Arial, sans-serif;
   background-color: #38526e;
   color: #333;
   line-height: 1.6;
@@ -22,36 +22,60 @@ body {
 /* Form container */
 form {
   max-width: 800px;
-  margin: 20px auto;
-  padding: 20px;
+  margin: 30px auto;
+  padding: 30px 35px;
   background-color: #fff;
-  border-radius: 5px;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 /* Form headings */
 h1 {
-  font-size: 36px;
-  color: #333;
+  font-size: 34px;
+  color: #2a3f54;
+  margin-bottom: 8px;
 }
+
 form h2 {
-  margin-bottom: 15px;
-  font-size: 24px;
+  margin-top: 28px;
+  margin-bottom: 16px;
+  font-size: 22px;
+  color: #38526e;
   border-bottom: 2px solid #38526e;
-  padding-bottom: 5px;
+  padding-bottom: 6px;
 }
 
 form h3 {
   margin-top: 20px;
   margin-bottom: 10px;
-  font-size: 20px;
+  font-size: 18px;
   color: #555;
+}
+
+form h4 {
+  line-height: 1.5;
+}
+
+.rma-instructions {
+  color: #d32f2f;
+}
+
+form p {
+  margin-bottom: 8px;
+}
+
+.rma-number {
+  margin-bottom: 16px;
+  font-size: 15px;
 }
 
 /* Form labels */
 label {
   display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
+  margin-bottom: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #444;
 }
 
 /* Text inputs */
@@ -62,24 +86,51 @@ input[type="date"],
 textarea,
 select {
   width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 3px;
+  padding: 10px 12px;
+  margin-bottom: 16px;
+  border: 1px solid #d0d5dd;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #333;
+  background-color: #fafbfc;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: #38526e;
+  box-shadow: 0 0 0 3px rgba(56, 82, 110, 0.15);
+  background-color: #fff;
+}
+
+textarea {
+  min-height: 100px;
+  resize: vertical;
 }
 
 /* Checkbox and radio inputs */
 input[type="checkbox"],
 input[type="radio"] {
   margin-right: 10px;
+  accent-color: #38526e;
+  cursor: pointer;
 }
 
 a {
   color: #38526e;
   text-decoration: none;
+  transition: color 0.2s ease;
 }
 
-
+a:hover {
+  color: #2a3f54;
+  text-decoration: underline;
+}
 
 .homeContent {
   display: flex;
@@ -91,16 +142,25 @@ a {
 
 .navigation {
   background-color: #fff;
-  align-items: center;
   display: inline-flex;
   justify-content: space-between;
   align-items: center;
-  padding: 32px;
+  padding: 20px 32px;
   color: #38526e;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .navigation a {
   color: #38526e;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.navigation a:hover {
+  background-color: rgba(56, 82, 110, 0.08);
   text-decoration: none;
 }
 
@@ -109,13 +169,16 @@ a {
 .radio-group {
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 14px;
+  padding: 4px 0;
 }
 
 .checkbox-group label,
 .radio-group label {
   margin-right: 20px;
   font-weight: normal;
+  font-size: 14px;
+  cursor: pointer;
 }
 
 .rmaProductList {
@@ -128,17 +191,33 @@ button[type="submit"] {
   display: inline-block;
   background-color: #38526e;
   color: #fff;
-  padding: 12px 25px;
+  padding: 12px 30px;
   border: none;
-  border-radius: 3px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 16px;
-  border-radius: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 6px rgba(56, 82, 110, 0.3);
 }
 
 button[type="submit"]:hover {
   background-color: #2f445c;
-  color: azure;
+  box-shadow: 0 4px 12px rgba(56, 82, 110, 0.4);
+  transform: translateY(-1px);
+}
+
+button[type="submit"]:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(56, 82, 110, 0.3);
+}
+
+button[type="submit"]:disabled {
+  background-color: #8a9bb0;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
 }
 
 /* File Upload Form Styles */
@@ -147,14 +226,15 @@ button[type="submit"]:hover {
   margin: 20px auto;
   padding: 0;
   background-color: #fff;
-  border-radius: 5px;
+  border-radius: 8px;
 }
 
 /* Label styling */
 .form-label {
   display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
+  margin-bottom: 6px;
+  font-weight: 600;
+  font-size: 14px;
   color: #333;
 }
 
@@ -162,17 +242,26 @@ button[type="submit"]:hover {
 .file-input {
   display: block;
   width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 3px;
+  padding: 10px 12px;
+  margin-bottom: 16px;
+  border: 1px solid #d0d5dd;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: #fafbfc;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.file-input:hover {
+  border-color: #38526e;
 }
 
 /* Selected file text */
 .selected-file {
-  font-size: 14px;
+  font-size: 13px;
   color: #555;
-  margin-bottom: 15px;
+  margin-bottom: 16px;
+  font-style: italic;
 }
 
 /* Submit button */
@@ -180,19 +269,26 @@ button[type="submit"]:hover {
   display: inline-block;
   background-color: #38526e;
   color: #fff;
-  padding: 12px 25px;
+  padding: 12px 30px;
   border: none;
-  border-radius: 12px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 16px;
-  transition: background-color 0.3s ease;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 6px rgba(56, 82, 110, 0.3);
 }
 
 .submit-button:hover {
   background-color: #2f445c;
-  color: azure;
+  box-shadow: 0 4px 12px rgba(56, 82, 110, 0.4);
+  transform: translateY(-1px);
 }
 
+.submit-button:active {
+  transform: translateY(0);
+}
 
 /* Overlay background */
 .popup-overlay {
@@ -206,15 +302,16 @@ button[type="submit"]:hover {
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  backdrop-filter: blur(2px);
 }
 
 /* Popup container */
 .popup-container {
   position: relative;
   background-color: white;
-  padding: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
   z-index: 1001;
 }
 
@@ -222,11 +319,17 @@ button[type="submit"]:hover {
 .close-button {
   position: absolute;
   top: 10px;
-  right: 10px;
+  right: 12px;
   background: none;
   border: none;
   font-size: 24px;
   cursor: pointer;
+  color: #666;
+  transition: color 0.2s ease;
+}
+
+.close-button:hover {
+  color: #333;
 }
 
 /* iFrame styling */
@@ -234,21 +337,32 @@ button[type="submit"]:hover {
   border: none;
 }
 
-
 /* Required field asterisk */
 .required-asterisk {
-  color: red;
+  color: #d32f2f;
   font-weight: bold;
+  margin-left: 2px;
 }
 
 /* Responsive adjustments */
 @media (max-width: 600px) {
   form {
-    padding: 15px;
+    margin: 15px;
+    padding: 20px;
+    border-radius: 8px;
   }
 
-  button[type="submit"] {
+  h1 {
+    font-size: 26px;
+  }
+
+  form h2 {
+    font-size: 19px;
+  }
+
+  button[type="submit"],
+  .submit-button {
     width: 100%;
-    padding: 12px;
+    padding: 14px;
   }
 }
