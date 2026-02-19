@@ -68,7 +68,7 @@ const RmaForm = () => {
       const urlEncodedData = new URLSearchParams();
       urlEncodedData.append("action", "submitAndUpload"); // Ensure action matches backend
       urlEncodedData.append("rmaNumber", rmaNumber); // Include auto-generated RMA number
-      urlEncodedData.append("isVictronProduct", isVictronProduct); // Include Victron product selection
+      urlEncodedData.append("isVictronProduct", isVictronProduct); // Include Victron product selections
       for (const key in formData) {
         if (formData.hasOwnProperty(key)) {
           // Auto-fill manufacturer as "Victron Energy" when user selected yes
