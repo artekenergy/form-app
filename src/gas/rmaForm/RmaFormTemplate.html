@@ -105,7 +105,9 @@ function appendFormData(e) {
     params.shippingAddress || '',
     params.artekOrderNumber || '',
     params.productSku || '',
+    params.isVictronProduct || '',
     params.serialNumber || '',
+    params.manufacturer || '',
     params.installationDate || '',
     params.failureDate || '',
     params.firmwareUpdated || '',
@@ -136,7 +138,9 @@ function createRmaPdf(data) {
         <p><strong>Shipping Address:</strong> ${data.shippingAddress || ""}</p>
         <p><strong>Artek Order #:</strong> ${data.artekOrderNumber || ""}</p>
         <p><strong>Product SKU:</strong> ${data.productSku || ""}</p>
-        <p><strong>Serial Number (HQ):</strong> ${data.serialNumber || ""}</p>
+        <p><strong>Victron Energy Product:</strong> ${data.isVictronProduct || ""}</p>
+        <p><strong>Serial Number:</strong> ${data.serialNumber || ""}</p>
+        <p><strong>Manufacturer:</strong> ${data.manufacturer || ""}</p>
         <p><strong>Installation Date:</strong> ${data.installationDate || ""}</p>
         <p><strong>Failure Date:</strong> ${data.failureDate || ""}</p>
         <p><strong>Firmware Updated?:</strong> ${data.firmwareUpdated || ""}</p>

@@ -9,7 +9,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const GAS_WEB_APP_URL =
-  "https://script.google.com/macros/s/AKfycbxy2AN0ePeclUXuK1-T_VHmNEbw2MYrL1bOwBL-iL0fFos3o_F-3X8ODpYsKmx3HgxQ/exec";
+  "https://script.google.com/macros/s/AKfycbxl09P_RaT91nIapUqAlrVPpGYEU4gAwbiUBnw4e3zwcCxMJiMugg5xOrzOkf9VLbdX/exec";
 
 const RmaForm = () => {
   const generateRmaNumber = () => {
@@ -33,6 +33,7 @@ const RmaForm = () => {
     artekOrderNumber: "",
     productSku: "",
     serialNumber: "",
+    manufacturer: "",
     installationDate: "",
     failureDate: "",
     firmwareUpdated: "",
@@ -42,6 +43,7 @@ const RmaForm = () => {
   });
 
   const [selectedFile, setSelectedFile] = useState(null);
+  const [isVictronProduct, setIsVictronProduct] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false); // State to manage submission status
 
   const handleInputChange = (e) => {
@@ -66,9 +68,15 @@ const RmaForm = () => {
       const urlEncodedData = new URLSearchParams();
       urlEncodedData.append("action", "submitAndUpload"); // Ensure action matches backend
       urlEncodedData.append("rmaNumber", rmaNumber); // Include auto-generated RMA number
+      urlEncodedData.append("isVictronProduct", isVictronProduct); // Include Victron product selection
       for (const key in formData) {
         if (formData.hasOwnProperty(key)) {
-          urlEncodedData.append(key, formData[key]); // Append each form field
+          // Auto-fill manufacturer as "Victron Energy" when user selected yes
+          if (key === "manufacturer" && isVictronProduct === "yes") {
+            urlEncodedData.append(key, "Victron Energy");
+          } else {
+            urlEncodedData.append(key, formData[key]);
+          }
         }
       }
 
@@ -119,6 +127,7 @@ const RmaForm = () => {
           artekOrderNumber: "",
           productSku: "",
           serialNumber: "",
+          manufacturer: "",
           installationDate: "",
           failureDate: "",
           firmwareUpdated: "",
@@ -223,13 +232,43 @@ const RmaForm = () => {
           onChange={handleInputChange}
           required
         />
-        <TextInput
-          label='Serial Number (Begins in "HQ"):'
-          name="serialNumber"
-          value={formData.serialNumber}
-          onChange={handleInputChange}
+        <RadioButton
+          label="Is this a Victron Energy product?"
+          name="isVictronProduct"
+          value={isVictronProduct}
+          options={[
+            { label: "Yes", value: "yes" },
+            { label: "No", value: "no" },
+          ]}
+          onChange={(e) => setIsVictronProduct(e.target.value)}
           required
         />
+        {isVictronProduct === "yes" && (
+          <TextInput
+            label='Serial Number (Begins in "HQ"):'
+            name="serialNumber"
+            value={formData.serialNumber}
+            onChange={handleInputChange}
+            required
+          />
+        )}
+        {isVictronProduct === "no" && (
+          <>
+            <TextInput
+              label="Serial Number (if applicable):"
+              name="serialNumber"
+              value={formData.serialNumber}
+              onChange={handleInputChange}
+            />
+            <TextInput
+              label="Manufacturer:"
+              name="manufacturer"
+              value={formData.manufacturer}
+              onChange={handleInputChange}
+              required
+            />
+          </>
+        )}
         <TextInput
           label="Installation Date:"
           name="installationDate"
