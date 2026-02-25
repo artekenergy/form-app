@@ -224,10 +224,8 @@ function sendAllEmails(userEmail, pdfBlob, data, fileUrl) {
     const subjectUser = "Your RMA Form Submission - PDF Summary";
     const messageUser = `Dear ${data.firstName || "User"},\n\nThank you for submitting your RMA form. Attached is a PDF summary of your submission.\n\nBest regards,\nArtek`;
 
-    MailApp.sendEmail({
-      to: userEmail,
-      subject: subjectUser,
-      body: messageUser,
+    GmailApp.sendEmail(userEmail, subjectUser, messageUser, {
+      from: "sales@artek.energy",
       attachments: [pdfBlob],
     });
     Logger.log(`Sent RMA PDF to user: ${userEmail}`);
@@ -238,10 +236,8 @@ function sendAllEmails(userEmail, pdfBlob, data, fileUrl) {
   const subjectOwner = "New RMA Submission - PDF & File Upload";
   const messageOwner = `A new RMA submission has been received. Attached is the PDF summary.\n\nName: ${data.firstName} ${data.lastName}\nEmail: ${data.email}\n\nUploaded File: ${fileUrl}\n\nBest regards,\nArtek`;
 
-  MailApp.sendEmail({
-    to: ownerEmails,
-    subject: subjectOwner,
-    body: messageOwner,
+  GmailApp.sendEmail(ownerEmails, subjectOwner, messageOwner, {
+    from: "sales@artek.energy",
     attachments: [pdfBlob],
   });
   Logger.log(`Sent RMA PDF + file URL to owners: ${ownerEmails}`);
